@@ -10,7 +10,7 @@ def LambdaDEBasis(d,e):
             basis[i,j] = math.comb(j, i)
     return basis
 
-def PossibleDynCompressing(degree,compression,number_of_solutions):
+def PossibleDynCompressing(degree,compression,number_of_solutions,show_only_dynamically_compressing = False,show_vector = False):
     # Input: degree, compression, #of solutions
     # Output: coordinates of each polynomial which can possibly send [degree+compression] to [degree+compression]. note not all of these vectors will work!
     if compression < 1:
@@ -57,7 +57,12 @@ def PossibleDynCompressing(degree,compression,number_of_solutions):
             new_vector[coord] = vector[0,coord]
         #print(new_vector)
         
-        print(count,"Coordinates:",tuple(map(int,j)),"\tCompression:",degree+compression,"to",max(new_vector)-min(new_vector)+1)
+        if show_only_dynamically_compressing and max(new_vector)-min(new_vector)+1 > degree+compression:
+            print(count,"(doesn't dynamically compress)")
+            continue
+        
+        print(count,"Coordinates:",tuple(map(int,j)),"\tCompression:",degree+compression,"to",max(new_vector)-min(new_vector)+1,"\tVector:",new_vector)
         
 print("Hello World!") # So you know the program is running
-PossibleDynCompressing(15,8,200)
+PossibleDynCompressing(10,10,10000,show_only_dynamically_compressing = True,show_vector = True)
+
