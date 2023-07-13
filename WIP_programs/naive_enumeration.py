@@ -1,3 +1,6 @@
+# This program implements an enumeration algorithm for finding all vectors in a given Euclidean ball.
+# However, it doesn't work very reliably because of round-off errors.
+
 import numpy
 import math
 
