@@ -20,20 +20,20 @@ def LambdaDEBasis(d,e):     # This creates the lattice \Lambda_{d,e}
             basis[i,j] = math.comb(j, i)
     return basis
 
-def LLL_reduced(d,e):           # This returns the LLL reduced basis (as row vecs) of the lattice \Lambda_{d,e}
+def LLL_reduced_b3(d,e):           # This returns the 3rd basis vector of the LLL reduced basis of the lattice \Lambda_{d,e}
     A = LambdaDEBasis(d,e)
     W = LLL.Wrapper(A)      
     W()                         # Runs the reduction
     if not LLL.is_reduced(A):   # This is just a sanity check, can be removed
         print("WARNING! Sanity check failed, lattice is not LLL reduced")
     # print(A)
-    return A                    # Returns the entire basis. Could be adjusted to only return e.g. a specific row vector
+    return A[2]                    # We don't need the other basis vectors
 
-def HKZ_reduced(d,e):           # This returns the HKZ reduced basis (as row vecs) of the lattice \Lambda_{d,e}
+def HKZ_reduced_b3(d,e):           # This returns the 3rd basis vector of the HKZ reduced basis of the lattice \Lambda_{d,e}
     A = LambdaDEBasis(d,e)
     A_red = BKZ.reduction(A, BKZ.Param(d+1))    # Runs BKZ reduction with beta = d+1, which is the same as HKZ reduction
     # print(A_red)
-    return A_red                # Returns the entire basis. Could be adjusted to only return e.g. a specific row vector
+    return A_red[2]                # We don't need the other basis vectors
 
 print("Hello World!") # So you know the program is running
 
@@ -48,37 +48,30 @@ for d in range (minsize,maxsize+1,step):
 
     es = range(math.floor(math.log2(d/2))+10)       # plotting for e from 0 to what they proved in the paper and another 9 values after that
 
-    maxReqBound3 = [(d+e+1)/2 for e in es]          # we want lambda3 to be at most this for dynamical compression to even exist
-    # maxReqBound3 = [(d+e)/2 for e in es]            # what I expect the bound we want on lambda2 to be, altough I haven't verified it
-    
-    lhsB2 = np.zeros(len(es))   
-    rhsB2 = np.zeros(len(es))                  
-    lhsB3 = np.zeros(len(es))
-    rhsB3 = np.zeros(len(es))               # Initialise the vectors that we will plot, so we can access without worry afterwards
+    maxReqBound = [(d+e+1)/2 for e in es]          # we want lambda3 to be at most this for dynamical compression to even exist
 
+    delta = 0.99                                #
+    alpha = 1/(delta-0.25)                      # Constants of the LLL reduction, used in our bound computation
+
+    lhsLLLred = np.zeros(len(es))               #
+    rhsLLLred = np.zeros(len(es))               # Initialise the vectors that we will plot, so we can access without worry afterwards
+    
     for i in range(len(es)):
-        latt = HKZ_reduced(d,es[i])         # get reduced basis
+
+        b3_LLL = LLL_reduced_b3(d,es[i])        # Get the third LLL reduced basis vector
 
         # Calculate lower and upper bounds, as given in the Overleaf document:
-        lhsB2[i] = math.sqrt((4)/(5*(d+es[i]+1))) * np.linalg.norm(latt[1],2)
-        rhsB2[i] =  math.sqrt((5)/(4)) * np.linalg.norm(latt[1],2)
-        lhsB3[i] = math.sqrt((2)/(3*(d+es[i]+1))) * np.linalg.norm(latt[2],2)
-        rhsB3[i] =  math.sqrt((3)/(2)) * np.linalg.norm(latt[2],2)  
+        lhsLLLred[i] = math.sqrt((math.pow(alpha,-d))/(d+es[i]+1)) * np.linalg.norm(b3_LLL,2)
+        rhsLLLred[i] = alpha * np.linalg.norm(b3_LLL,2)
 
     # Plot the graph - should be fairly self-explanatory
-    plt.plot(es,maxReqBound3,'y--',label="max value lambda_3 can take")
-    plt.plot(es,lhsB2,'g',label="lower bound given by b_2")
-    plt.plot(es,rhsB2,'g',label="upper bound given by b_2")
-    plt.plot(es,lhsB3,'k',label="lower bound given by b_3")
-    plt.plot(es,rhsB3,'k',label="upper bound given by b_3")
+    plt.plot(es,maxReqBound,'g--',label="max value lambda_3 can take")
+    plt.plot(es,lhsLLLred,'k',label="lower bound given by LLL")
+    plt.plot(es,rhsLLLred,'k',label="upper bound given by LLL")
+    plt.fill_between(es,lhsLLLred,rhsLLLred, alpha=0.2)         # Fill in the possible range for \lambda_3
     plt.axvline(x = math.floor(math.log2(d/2)), color = 'y',label="value of e the result has been proven to")
-    plt.fill_between(es,lhsB2,rhsB2, alpha=0.2)         # Fill in the possible range for \lambda_2
-    plt.fill_between(es,lhsB3,rhsB3, alpha=0.2)         # Fill in the possible range for \lambda_3
     plt.legend(loc="upper left")
-    plt.ylim([0, 3*max(maxReqBound3)])
-    plt.title("d="+str(d))
-    plt.xlabel("e")
-    plt.ylabel("value of second and 3rd successive minima")
-    plt.savefig("Bounding second and third successive minima by HKZ for d="+str(d))     # Automatically save plot to file
+    plt.ylim([0, 3*max(maxReqBound)])
+    plt.savefig("Bounding 3rd succ min for d="+str(d)+" LLL only")                  # Automatically save plot to file
     # plt.show()              # To display the picture, if you're running it in a Jupiter notebook or smth - not useful otherwise
-    plt.close()         # Clears the plot
+    plt.close()             # Clears the plot
