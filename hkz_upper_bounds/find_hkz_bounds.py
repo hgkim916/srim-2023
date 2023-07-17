@@ -68,4 +68,4 @@ def Find_emax_UpperBound(d, print_progress = False, print_result = True):
         print("----------------",d,max_e - 4)
     return max_e - 4
 
-Find_emax_UpperBound(69,print_progress = True)
+Find_emax_UpperBound(20,print_progress = True)
