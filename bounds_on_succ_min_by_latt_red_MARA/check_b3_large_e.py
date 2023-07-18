@@ -47,8 +47,12 @@ maxsize = 70
 step = 1
 
 # We will output the results to a file in the subfolder Results
-f = open("./Results/is_b3_quad_for_large_e.txt","w") # We open and close the file to delete any previous results
+
+# This 'flushes' previous results:
+f = open("./Results/is_b3_quad_for_large_e.txt","w")
 f.close()
+# If you don't want this to happen (e.g. you're appending values of d from where the last computation stopped, 
+# then comment this out before running, to prevent the loss of your info)
 
 for d in range(minsize,maxsize+1):
 
