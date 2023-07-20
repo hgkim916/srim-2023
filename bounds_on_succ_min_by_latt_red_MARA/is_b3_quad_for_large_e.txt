@@ -132,3 +132,7 @@ Largest value of e that doesn't have b_3 as a translation of the optimal quadrat
 Largest value of e that doesn't have b_3 as a translation of the optimal quadratic is e = 13
 # d = 68
 Largest value of e that doesn't have b_3 as a translation of the optimal quadratic is e = 13
+# d = 69
+Largest value of e that doesn't have b_3 as a translation of the optimal quadratic is e = 13
+# d = 70
+Largest value of e that doesn't have b_3 as a translation of the optimal quadratic is e = 13
