@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+
 # THE AIM OF THIS:  given any d, it outputs the maximum size for which all the points in that box about the origin
 #                   remain in some periodic cycles within the box of d+2
 
@@ -76,25 +79,69 @@ def trace_pt(p,X,box_range):        # follows the orbit of a point X under Henon
     orbit.append(X)                 # add the last vertex to complete the orbit
     return orbit
 
-def find_size(d,visited):
+def expected_size(d):
+    if d%12==1:
+        return 0
+    elif d%12 == 3 or d%12==5:
+        return 2
+    elif d%12 == 7:
+        return 4
+    elif d%12 == 9:
+        return 3
+    elif d%12 == 11:
+        return 1
+    else:
+        print("Uhhh I shouldn't have d=",d)
+        return 0
+
+def find_size(d,visited):       # prints the size of the max l_inf box allowed
     for size in range(0,d+3):
             for i in range(-size,size+1):
                 if [i,size] not in visited or [i,-size] not in visited or [size,i] not in visited or [-size,i] not in visited:
                     print("Maximum size for d=",d,"is d -",d-(size-1))
                     return 
+                
+def check_size(d,visited):          # checks if the given value of d does indeed behave as we would expect it to
+    for size in range(0,d+3):
+            for i in range(-size,size+1):
+                if [i,size] not in visited or [i,-size] not in visited or [size,i] not in visited or [-size,i] not in visited:
+                    k = d - (size-1)
+                    if k!= expected_size(d):
+                        print("The box for d=",d,"has size d-",k,", different from the expected size of d-",expected_size(d))
+                    else:
+                        print("d=",d,"- good!")
+                    return
+                
 
-for d in range(11,101,12):     
-    p = poly(d)     # get the polynomial
-    box_range = d+2
-    check_range = d+2       # could start cycles in a subset of the box 
-    visited = []        # store all the vertices whose orbits we've already plotted
+def output_bound():         # OUTPUT BOUND
+    for d in range(1,100,2):     
+        p = poly(d)     # get the polynomial
+        box_range = d+2
+        check_range = d+2       # could start cycles in a subset of the box 
+        visited = []        # store all the vertices whose orbits we've already plotted
 
-    for i in range(0,check_range+1):    
-        for j in range(0,check_range+1):        # iterate through all the points
-            if [i,j] not in visited:            # only iterate if we haven't plotted already, to reduce computation
-                orbit = trace_pt(p,[i,j],box_range)     # get the orbit by tracing the point
-                for pt in orbit:
-                    visited.append(pt)          # add each iterate to the list of plotted vertices
-    
-    find_size(d,visited)
-    
+        for i in range(0,check_range+1):    
+            for j in range(0,check_range+1):        # iterate through all the points
+                if [i,j] not in visited:            # only iterate if we haven't plotted already, to reduce computation
+                    orbit = trace_pt(p,[i,j],box_range)     # get the orbit by tracing the point
+                    for pt in orbit:
+                        visited.append(pt)          # add each iterate to the list of plotted vertices
+        find_size(d,visited)
+
+
+def check_bound():          # CHECK BOUND
+    for d in range(1,1000,2):
+        p = poly(d)     # get the polynomial
+        box_range = d+2
+        check_range = d+2       # could start cycles in a subset of the box 
+        visited = []        # store all the vertices whose orbits we've already plotted
+        for i in range(0,check_range+1):    
+            for j in range(0,check_range+1):        # iterate through all the points
+                if [i,j] not in visited:            # only iterate if we haven't plotted already, to reduce computation
+                    orbit = trace_pt(p,[i,j],box_range)     # get the orbit by tracing the point
+                    for pt in orbit:
+                        visited.append(pt)          # add each iterate to the list of plotted vertices
+        check_size(d,visited)
+
+# output_bound()
+check_bound()
