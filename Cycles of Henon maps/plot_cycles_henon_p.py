@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
@@ -89,18 +90,21 @@ def plot_orbit (orbit,col_index,box_range):         # plot the orbit
         for k in range(len(orbit)-1):
             plt.arrow(orbit[k][0],orbit[k][1],orbit[k+1][0]-orbit[k][0],orbit[k+1][1]-orbit[k][1],width=.01,color = col,alpha =0.2)         # plots an arrow between two consecutive iterates
 
-for d in range(3,51,2):     # save all of these figures
+for d in range(3,201,2):     # save all of these figures
     p = poly(d)     # get the polynomial
     box_range = d+2
     check_range = d+2       # could start cycles in a subset of the box 
     plotted = []        # store all the vertices whose orbits we've already plotted
 
     col_index = 0
-    plt.figure(figsize = (20,20))
+    plt.figure(figsize = (15,15))
 
     xs = [-d,-d,d,d,-d]     
     ys = [-d,d,d,-d,-d]
     plt.plot(xs,ys,"--",color = "grey")     # draw a box through (d,d) etc, to show where the cycles are relative to it
+    # plt.grid(which="both")
+    # plt.xticks([i for i in range(-box_range-1,box_range+1)])
+    # plt.yticks([i for i in range(-box_range-1,box_range+1)])
 
     for i in range(0,check_range+1):    
         for j in range(0,check_range+1):        # iterate through all the points
@@ -113,9 +117,6 @@ for d in range(3,51,2):     # save all of these figures
 
     # plot formatting:
 
-    plt.grid(which="both")
-    plt.xticks([i for i in range(-box_range-1,box_range+1)])
-    plt.yticks([i for i in range(-box_range-1,box_range+1)])
     plt.axis('equal')
-    plt.savefig("./Cycles of Henon maps/plots/The cycles in the Henon map for d="+str(d)+"")
+    plt.savefig("Cycles_of_Henon_maps/plots/The cycles in the Henon map for d="+str(d)+"")
     plt.close()
