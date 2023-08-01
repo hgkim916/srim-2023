@@ -9,6 +9,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
 
+
 def poly(d):            # returns the polynomial p
     if d%4==1: # given by 0 1 1 0 -1 -1 0 ... (starting at 0)
         def p(x):
@@ -21,15 +22,15 @@ def poly(d):            # returns the polynomial p
                 val = -1
 
             # adjust the endpoints and return the appropriate value of p(x)
-            if abs(x)<=d:
+            if abs(x)<=(d+1)/2:
                 return val
-            elif x == d+1:
+            elif x == (d+3)/2:
                 return val+1
-            elif x == -(d+1):
+            elif x == -(d+3)/2:
                 return val-1
-            elif x == d+2:
+            elif x == (d+5)/2:
                 return val + (d+2)
-            elif x == -(d+2):
+            elif x == -(d+5)/2:
                 return val - (d+2)
             else:  # can only calculate for x in the "nice" range
                 print("Error, cannot calculate for d=",d,"and x=",x,"!")
@@ -45,15 +46,15 @@ def poly(d):            # returns the polynomial p
                 val = 1
                 
             # adjust the endpoints and return the appropriate value of p(x)
-            if abs(x)<=d:
+            if abs(x)<=(d+1)/2:
                 return val
-            elif x == d+1:
+            elif x == (d+3)/2:
                 return val+1
-            elif x == -(d+1):
+            elif x == -(d+3)/2:
                 return val-1
-            elif x == d+2:
+            elif x == (d+5)/2:
                 return val + (d+2)
-            elif x == -(d+2):
+            elif x == -(d+5)/2:
                 return val - (d+2)
             else: # can only calculate for x in the "nice" range
                 print("Error, cannot calculate for d=",d,"and x=",x,"!")
@@ -64,7 +65,7 @@ def poly(d):            # returns the polynomial p
             return x
         
     return p
-            
+
 def Henon(p,X):     # this is the Henon map of polynomial p: (x,y) -> (y, -x + p(y))
     return [X[1],-X[0]+p(X[1])]
 
@@ -80,68 +81,64 @@ def trace_pt(p,X,box_range):        # follows the orbit of a point X under Henon
     return orbit
 
 def expected_size(d):
-    if d%12==1:
-        return 0
-    elif d%12 == 3 or d%12==5:
+    if d%6==1:
         return 2
-    elif d%12 == 7:
+    elif d%6==3:
         return 4
-    elif d%12 == 9:
-        return 3
-    elif d%12 == 11:
-        return 1
+    elif d%6 == 5:
+        return 5
     else:
         print("Uhhh I shouldn't have d=",d)
         return 0
 
 def find_size(d,visited):       # prints the size of the max l_inf box allowed
-    for size in range(0,d+3):
+    for size in range(0,int((d+5)/2)+3):
             for i in range(-size,size+1):
                 if [i,size] not in visited or [i,-size] not in visited or [size,i] not in visited or [-size,i] not in visited:
-                    print("Maximum size for d=",d,"is d -",d-(size-1))
-                    return 
-                
-def check_size(d,visited):          # checks if the given value of d does indeed behave as we would expect it to
-    for size in range(0,d+3):
-            for i in range(-size,size+1):
-                if [i,size] not in visited or [i,-size] not in visited or [size,i] not in visited or [-size,i] not in visited:
-                    k = d - (size-1)
-                    if k!= expected_size(d):
-                        print("The box for d=",d,"has size d-",k,", different from the expected size of d-",expected_size(d))
-                    else:
-                        print("d=",d,"- good!")
-                    return
-                
+                    return int((d+5)/2)-(size-1)
 
 def output_bound():         # OUTPUT BOUND
-    for d in range(1,100,2):     
+    for d in range(1,50,2):     
         p = poly(d)     # get the polynomial
-        box_range = d+2
-        check_range = d+2       # could start cycles in a subset of the box 
+        box_range = int((d+5)/2)
+        check_range = int((d+5)/2)      # could start cycles in a subset of the box 
         visited = []        # store all the vertices whose orbits we've already plotted
 
-        for i in range(0,check_range+1):    
-            for j in range(0,check_range+1):        # iterate through all the points
+        for i in range(-check_range,check_range+1):    
+            for j in range(-check_range,check_range+1):        # iterate through all the points
                 if [i,j] not in visited:            # only iterate if we haven't plotted already, to reduce computation
                     orbit = trace_pt(p,[i,j],box_range)     # get the orbit by tracing the point
                     for pt in orbit:
                         visited.append(pt)          # add each iterate to the list of plotted vertices
-        find_size(d,visited)
+        max_size = find_size(d,visited)
+        print("Maximum size for d=",d,"is (d+5)/2 -",max_size)
 
 
 def check_bound():          # CHECK BOUND
-    for d in range(1,1000,2):
+    f = open("Cycles_of_Henon_maps/check_henon.txt","a") 
+    f.close()   
+    f = open("Cycles_of_Henon_maps/check_henon.txt","w") 
+    f.close()   
+    for d in range(1,300,2):
+        f = open("Cycles_of_Henon_maps/check_henon.txt","a")    
         p = poly(d)     # get the polynomial
-        box_range = d+2
-        check_range = d+2       # could start cycles in a subset of the box 
+        box_range = int((d+5)/2)
+        check_range = int((d+5)/2)      # could start cycles in a subset of the box 
         visited = []        # store all the vertices whose orbits we've already plotted
-        for i in range(0,check_range+1):    
-            for j in range(0,check_range+1):        # iterate through all the points
+        for i in range(-check_range,check_range+1):    
+            for j in range(-check_range,check_range+1):        # iterate through all the points
                 if [i,j] not in visited:            # only iterate if we haven't plotted already, to reduce computation
                     orbit = trace_pt(p,[i,j],box_range)     # get the orbit by tracing the point
                     for pt in orbit:
                         visited.append(pt)          # add each iterate to the list of plotted vertices
-        check_size(d,visited)
+       
+        k = find_size(d,visited)
+        if k!= expected_size(d):
+            print("The box for d=",d,"has size (d+5)/2 -",k,", different from the expected size of (d+5)/2 -",expected_size(d),file=f)
+        else:
+            print("d=",d,"- good!",file=f)
+        f.close()
+    
 
 # output_bound()
 check_bound()

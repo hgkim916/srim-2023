@@ -15,15 +15,15 @@ def poly(d):            # returns the polynomial p
                 val = -1
 
             # adjust the endpoints and return the appropriate value of p(x)
-            if abs(x)<=d:
+            if abs(x)<=(d+1)/2:
                 return val
-            elif x == d+1:
+            elif x == (d+3)/2:
                 return val+1
-            elif x == -(d+1):
+            elif x == -(d+3)/2:
                 return val-1
-            elif x == d+2:
+            elif x == (d+5)/2:
                 return val + (d+2)
-            elif x == -(d+2):
+            elif x == -(d+5)/2:
                 return val - (d+2)
             else:  # can only calculate for x in the "nice" range
                 print("Error, cannot calculate for d=",d,"and x=",x,"!")
@@ -39,15 +39,15 @@ def poly(d):            # returns the polynomial p
                 val = 1
                 
             # adjust the endpoints and return the appropriate value of p(x)
-            if abs(x)<=d:
+            if abs(x)<=(d+1)/2:
                 return val
-            elif x == d+1:
+            elif x == (d+3)/2:
                 return val+1
-            elif x == -(d+1):
+            elif x == -(d+3)/2:
                 return val-1
-            elif x == d+2:
+            elif x == (d+5)/2:
                 return val + (d+2)
-            elif x == -(d+2):
+            elif x == -(d+5)/2:
                 return val - (d+2)
             else: # can only calculate for x in the "nice" range
                 print("Error, cannot calculate for d=",d,"and x=",x,"!")
@@ -90,24 +90,24 @@ def plot_orbit (orbit,col_index,box_range):         # plot the orbit
         for k in range(len(orbit)-1):
             plt.arrow(orbit[k][0],orbit[k][1],orbit[k+1][0]-orbit[k][0],orbit[k+1][1]-orbit[k][1],width=.01,color = col,alpha =0.2)         # plots an arrow between two consecutive iterates
 
-for d in range(3,201,2):     # save all of these figures
+for d in range(3,50,2):     # save all of these figures
     p = poly(d)     # get the polynomial
-    box_range = d+2
-    check_range = d+2       # could start cycles in a subset of the box 
+    box_range = int((d+5)/2)
+    check_range = int((d+5)/2 )      # could start cycles in a subset of the box 
     plotted = []        # store all the vertices whose orbits we've already plotted
 
     col_index = 0
     plt.figure(figsize = (15,15))
 
-    xs = [-d,-d,d,d,-d]     
-    ys = [-d,d,d,-d,-d]
+    xs = [-box_range,-box_range,box_range,box_range,-box_range]     
+    ys = [-box_range,box_range,box_range,-box_range,-box_range]
     plt.plot(xs,ys,"--",color = "grey")     # draw a box through (d,d) etc, to show where the cycles are relative to it
     # plt.grid(which="both")
     # plt.xticks([i for i in range(-box_range-1,box_range+1)])
     # plt.yticks([i for i in range(-box_range-1,box_range+1)])
 
-    for i in range(0,check_range+1):    
-        for j in range(0,check_range+1):        # iterate through all the points
+    for i in range(-check_range,check_range+1):    
+        for j in range(-check_range,check_range+1):        # iterate through all the points
             if [i,j] not in plotted:            # only iterate if we haven't plotted already, to reduce computation
                 orbit = trace_pt(p,[i,j],box_range)     # get the orbit by tracing the point
                 for pt in orbit:
