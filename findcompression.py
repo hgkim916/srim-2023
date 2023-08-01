@@ -21,7 +21,7 @@ def PossibleDynCompressing(degree,compression,number_of_solutions,show_only_dyna
     M = MatGSO(A)
     _ = M.update_gso()
     enum = Enumeration(M,strategy = EvaluatorStrategy.BEST_N_SOLUTIONS,nr_solutions = number_of_solutions,sub_solutions=False)
-    #print((degree+compression)*floor((degree+compression)/2)^2)
+    #print((degree+compression)*(math.floor((degree+compression)/2)**2))
     e1 = enum.enumerate(0, degree+1, (degree+compression)*(math.floor((degree+compression)/2)**2), 0)
     count = 0
     found_vectors = []
