@@ -3,7 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
 
-def discrete_sine_poly(d):            # returns the polynomial p
+def discrete_sine_poly(d):      # returns the discrete sine polynomial p.
+                                # defined in a box, outside of which the Henon maps diverge to infty.
     if d%4==1: # given by 0 1 1 0 -1 -1 0 ... (starting at 0)
         def p(x):
             # define it periodically 
@@ -106,6 +107,9 @@ def find_largest_orbit(p,escape_radius,check_radius):
                 continue
             else:
                 orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius)
+                if len(orbit) == 0:
+                    continue
+                print(orbit)
                 found_points.extend(orbit)
                 if len(orbit)-1 > largest_orbit_size:
                     #print(orbit)
@@ -141,12 +145,13 @@ def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",refer
     plt.savefig(figure_name)
     plt.close()
 
-# print(find_largest_orbit(discrete_sine_poly(5),5,5))
+#print(find_largest_orbit(discrete_sine_poly(3),4,4))
 
 
+#poly = discrete_sine_poly(3) # Check values of the discrete sine
+#for i in range(-8,9):
+#    print(i,poly(i))
 
 
-
-
-for d in range(3,11,2):     # runs the original program that was included.
-    create_henon_graphic(discrete_sine_poly(d),d+2,d+2,figure_name="outputs/Henon_d_"+str(d),reference_box_size=d)
+#for d in range(3,11,2):     # Runs the original program that was included.
+#    create_henon_graphic(discrete_sine_poly(d),int((d+5)/2),int((d+5)/2),figure_name="outputs/Henon_d_"+str(d),reference_box_size=int((d+5)/2))
