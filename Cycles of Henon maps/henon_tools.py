@@ -55,9 +55,7 @@ def discrete_sine_poly(d):      # returns the discrete sine polynomial p.
                 return None
     else:
         print("Warning, this value of d has not yet been implemented!")
-        def p(x):       # returns the identity, so that the program doesn't crash
-            return x
-        
+        return None
     return p
             
 def henon(p,X):     # this is the Henon map of polynomial p: (x,y) -> (y, -x + p(y))
@@ -147,20 +145,23 @@ def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",refer
 
 def print_largest_orbits_discrete_sine(d_min,d_max):
     for d in range(d_min,d_max+2,2):
-        print(find_largest_orbit(discrete_sine_poly(d),int((d+5)/2),4))
+        print(find_largest_orbit(discrete_sine_poly(d),int((d+5)/2),int((d+5)/2)))
 
 def create_henon_graphics_discrete_sine(d_min,d_max):
     for d in range(d_min,d_max+2,2):     
         create_henon_graphic(discrete_sine_poly(d),int((d+5)/2),int((d+5)/2),figure_name="outputs/Henon_d_"+str(d),reference_box_size=int((d+5)/2))
 
+def make_your_own_function(values,index_start):
+    def p(x):
+        if x-index_start<0 or x-index_start>=len(values):
+            print("Outside function range!")
+            return None
+        return values[x-index_start]
+    return p
 
-#print_largest_orbits_discrete_sine(3,49)
+#poly = make_your_own_function([-10, -2, 2, 3, 2, 0, -2, -3, -2, 2, 10],-5)
+#poly = make_your_own_function([-298, -1, 1, -1, 1, 1, 1, 1, 0, -1, -1, -1, -1, 1, -1, 1, 298],-8)
 
-#print(find_largest_orbit(discrete_sine_poly(3),4,4))
-
-#poly = discrete_sine_poly(3) # Check values of the discrete sine
-#for i in range(-8,9):
-#    print(i,poly(i))
+print_largest_orbits_discrete_sine(3,49)
 
 #create_henon_graphics_discrete_sine(3,50) # Runs the original program that was included.
-
