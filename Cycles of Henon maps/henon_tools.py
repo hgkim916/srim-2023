@@ -109,7 +109,7 @@ def find_largest_orbit(p,escape_radius,check_radius):
                 orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius)
                 if len(orbit) == 0:
                     continue
-                print(orbit)
+                #print(orbit)
                 found_points.extend(orbit)
                 if len(orbit)-1 > largest_orbit_size:
                     #print(orbit)
@@ -145,13 +145,22 @@ def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",refer
     plt.savefig(figure_name)
     plt.close()
 
-#print(find_largest_orbit(discrete_sine_poly(3),4,4))
+def print_largest_orbits_discrete_sine(d_min,d_max):
+    for d in range(d_min,d_max+2,2):
+        print(find_largest_orbit(discrete_sine_poly(d),int((d+5)/2),4))
 
+def create_henon_graphics_discrete_sine(d_min,d_max):
+    for d in range(d_min,d_max+2,2):     
+        create_henon_graphic(discrete_sine_poly(d),int((d+5)/2),int((d+5)/2),figure_name="outputs/Henon_d_"+str(d),reference_box_size=int((d+5)/2))
+
+
+#print_largest_orbits_discrete_sine(3,49)
+
+#print(find_largest_orbit(discrete_sine_poly(3),4,4))
 
 #poly = discrete_sine_poly(3) # Check values of the discrete sine
 #for i in range(-8,9):
 #    print(i,poly(i))
 
+#create_henon_graphics_discrete_sine(3,50) # Runs the original program that was included.
 
-#for d in range(3,11,2):     # Runs the original program that was included.
-#    create_henon_graphic(discrete_sine_poly(d),int((d+5)/2),int((d+5)/2),figure_name="outputs/Henon_d_"+str(d),reference_box_size=int((d+5)/2))
