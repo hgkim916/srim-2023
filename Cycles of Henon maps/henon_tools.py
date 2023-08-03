@@ -68,27 +68,27 @@ def discrete_sine_poly(d,negative = False):      # returns the discrete sine pol
     print("Warning, this value of d has not yet been implemented!")
     return None
             
-def henon(p,X):     # this is the Henon map of polynomial p: (x,y) -> (y, -x + p(y))
+def henon(p,X,x_coefficient=-1):     # this is the Henon map of polynomial p: (x,y) -> (y, x_coefficient*x + p(y))
     result = p(X[1])
     if result == None:
         # print("Henon map failed at X=",X)
         return None # This is a (carried over) flag telling us that we went outside of the nice box, and hence we should stop iterating
     else:
-        return [X[1],-X[0]+p(X[1])]
+        return [X[1],x_coefficient*X[0]+p(X[1])]
 
-def trace_pt(p,X,box_range):        # follows the orbit of a point X under Henon map with polynomial p, 
+def trace_pt(p,X,box_range,x_coefficient=-1):        # follows the orbit of a point X under Henon map with polynomial p, 
                                     # stopping either upon repeating a vertex or when we go outside the nice range
                                     # Returns the path that the point took, only if it's a loop.
     orbit = []
     while X not in orbit:
         orbit.append(X)
-        X = henon(p,X)
+        X = henon(p,X,x_coefficient=x_coefficient)
         if abs(X[0])>box_range or abs(X[1])>box_range:
             return []               # if we iterate outside the d+2 box, we don't want to plot the orbit at all
     orbit.append(X)                 # add the last vertex to complete the orbit
     return orbit
 
-def plot_orbit (orbit,colour_parameter,box_range,colour_style = "DEFAULT"):         # plot the orbit
+def plot_orbit (orbit,colour_parameter,box_range,colour_style="DEFAULT"):         # plot the orbit
     
     if colour_style == "DEFAULT":
         # initialise the colours
@@ -108,7 +108,7 @@ def plot_orbit (orbit,colour_parameter,box_range,colour_style = "DEFAULT"):     
         for k in range(len(orbit)-1):
             plt.arrow(orbit[k][0],orbit[k][1],orbit[k+1][0]-orbit[k][0],orbit[k+1][1]-orbit[k][1],width=.01,color = col,alpha =0.2)         # plots an arrow between two consecutive iterates
 
-def find_longest_cycle_length(p,escape_radius,check_radius): # find the length of the longest cycle in an orbit p.
+def find_longest_cycle_length(p,escape_radius,check_radius,x_coefficient=-1): # find the length of the longest cycle in an orbit p.
                                                              # can easily be modified to give you the actual cycle too.
     found_points = []
     largest_orbit_size = 0
@@ -118,7 +118,7 @@ def find_longest_cycle_length(p,escape_radius,check_radius): # find the length o
             if [x_tocheck,y_tocheck] in found_points:
                 continue
             else:
-                orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius)
+                orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius,x_coefficient=x_coefficient)
                 if len(orbit) == 0:
                     continue
                 #print(orbit)
@@ -128,7 +128,7 @@ def find_longest_cycle_length(p,escape_radius,check_radius): # find the length o
                     largest_orbit_size = len(orbit)-1
     return largest_orbit_size
 
-def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",reference_box_size=0,colour_style="DEFAULT"):
+def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",reference_box_size=0,colour_style="DEFAULT",x_coefficient=-1):
 
     found_points = []        # store all the vertices whose orbits we've already plotted
     plt.figure(figsize = (15,15))
@@ -142,7 +142,7 @@ def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",refer
     # plt.yticks([i for i in range(-box_range-1,box_range+1)])
 
     if colour_style == "LENGTH" or "LONGEST":
-        longest_cycle = find_longest_cycle_length(p,escape_radius,check_radius)
+        longest_cycle = find_longest_cycle_length(p,escape_radius,check_radius,x_coefficient=x_coefficient)
     if colour_style == "LONGEST":
         exceptional_cycle_already_plotted = False
 
@@ -151,8 +151,9 @@ def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",refer
         for j in range(-check_radius,check_radius+1):        # iterate through all the points
             if [i,j] in found_points: continue            # only iterate if we haven't plotted already, to reduce computation
             
-            orbit = trace_pt(p,[i,j],escape_radius)     # get the orbit by tracing the point
+            orbit = trace_pt(p,[i,j],escape_radius,x_coefficient=x_coefficient)     # get the orbit by tracing the point
             if len(orbit) == 0: continue
+            print(orbit)
             found_points.extend(orbit)          # add each iterate to the list of plotted vertices
             if colour_style == "DEFAULT":
                 plot_orbit(orbit,count,escape_radius)       # plot the orbit    
@@ -177,13 +178,17 @@ def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",refer
     plt.savefig(figure_name)
     plt.close()
 
-def print_length_of_longest_cycles_discrete_sine(d_min,d_max,negative = False):
+def print_length_of_longest_cycles_discrete_sine(d_min,d_max,negative = False,x_coefficient=-1):
     for d in range(d_min,d_max+2,2):
-        print(find_longest_cycle_length(discrete_sine_poly(d,negative=negative),int((d+5)/2),int((d+5)/2)))
+        print(find_longest_cycle_length(discrete_sine_poly(d,negative=negative),int((d+5)/2),int((d+5)/2),x_coefficient=x_coefficient))
 
-def create_henon_graphics_discrete_sine(d_min,d_max,figure_name="henon_d_",colour_style = "DEFAULT",negative = False):
+def create_henon_graphics_discrete_sine(d_min,d_max,figure_name="henon_d_",colour_style = "DEFAULT",negative = False,x_coefficient=-1):
     for d in range(d_min,d_max+2,2):     
-        create_henon_graphic(discrete_sine_poly(d,negative=negative),int((d+5)/2),int((d+5)/2),figure_name="outputs/"+figure_name+str(d),reference_box_size=int((d+5)/2),colour_style=colour_style)
+        create_henon_graphic(discrete_sine_poly(d,negative=negative),int((d+5)/2),int((d+5)/2),
+                             figure_name="outputs/"+figure_name+str(d),
+                             reference_box_size=int((d+5)/2),
+                             colour_style=colour_style,
+                             x_coefficient=x_coefficient)
 
 def make_your_own_function(values,index_start): # define a function that takes specified values at integer intervals starting at index_start.
     def p(x):
@@ -193,7 +198,7 @@ def make_your_own_function(values,index_start): # define a function that takes s
         return values[x-index_start]
     return p
 
-def count_cycle_lengths(p,escape_radius,check_radius): # returns a dict with all the counts of cycle lengths
+def count_cycle_lengths(p,escape_radius,check_radius,x_coefficient=-1): # returns a dict with all the counts of cycle lengths
     found_points = []
     lengths = {}
     for x_tocheck in range(-check_radius,check_radius):
@@ -201,7 +206,7 @@ def count_cycle_lengths(p,escape_radius,check_radius): # returns a dict with all
             if [x_tocheck,y_tocheck] in found_points:
                 continue
             else:
-                orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius)
+                orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius,x_coefficient=x_coefficient)
                 orbit_length = len(orbit)-1
                 if orbit_length == -1:
                     continue
@@ -232,4 +237,10 @@ def count_cycle_lengths(p,escape_radius,check_radius): # returns a dict with all
 #create_henon_graphics_discrete_sine(3,49,figure_name="by_length/henon_negative_bylength_d_",colour_style="LENGTH",negative=True)
 #create_henon_graphics_discrete_sine(3,49,figure_name="longest/henon_negative_longest_d_",colour_style="LONGEST",negative=True)
 
-print_length_of_longest_cycles_discrete_sine(3,49,negative=True)
+#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/default/henon_d_",x_coefficient=1)
+#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/by_length/henon_bylength_d_",colour_style="LENGTH",x_coefficient=1)
+#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/longest/henon_longest_d_",colour_style="LONGEST",x_coefficient=1)
+
+#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/default/henon_d_",negative=True,x_coefficient=1)
+#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/by_length/henon_bylength_d_",colour_style="LENGTH",negative=True,x_coefficient=1)
+#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/longest/henon_longest_d_",colour_style="LONGEST",negative=True,x_coefficient=1)
