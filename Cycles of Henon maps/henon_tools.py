@@ -28,7 +28,7 @@ def discrete_sine_poly(d,negative = False):      # returns the discrete sine pol
             elif x == -(d+5)/2:
                 val-=(d+2)
             else:  # can only calculate for x in the "nice" range
-                print("Error, cannot calculate for d=",d,"and x=",x,"!")
+                # print("Error, cannot calculate for d=",d,"and x=",x,"!")
                 return None
             
             if negative:
@@ -57,7 +57,7 @@ def discrete_sine_poly(d,negative = False):      # returns the discrete sine pol
             elif x == -(d+5)/2:
                 val-=(d+2)
             else: # can only calculate for x in the "nice" range
-                print("Error, cannot calculate for d=",d,"and x=",x,"!")
+                # print("Error, cannot calculate for d=",d,"and x=",x,"!")
                 return None
             
             if negative:
@@ -83,6 +83,8 @@ def trace_pt(p,X,box_range,x_coefficient=-1):        # follows the orbit of a po
     while X not in orbit:
         orbit.append(X)
         X = henon(p,X,x_coefficient=x_coefficient)
+        if X == None:
+            return []
         if abs(X[0])>box_range or abs(X[1])>box_range:
             return []               # if we iterate outside the d+2 box, we don't want to plot the orbit at all
     orbit.append(X)                 # add the last vertex to complete the orbit
@@ -220,7 +222,32 @@ def count_cycle_lengths(p,escape_radius,check_radius,x_coefficient=-1): # return
     lengths = {a:b for a,b in sorted(lengths.items())}
     return lengths
 
+def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "shift" to the right
+    def new_poly(x):
+        return poly(x-shift)
+    return new_poly
 
+def check_left_right_shifts(dmin,dmax,step):
+    for d in range(dmin,dmax,step):
+        f = open("longest_cycle_shifts.txt",'a')
+        init_poly = discrete_sine_poly(d)
+        shift_min = -4
+        shift_max = 4
+        max_cycle_lengths = []
+        for shift in range(shift_min,shift_max):
+            shift_poly = shift_poly_in_x(shift,init_poly)
+            max_cycle_lengths.append(find_longest_cycle_length(shift_poly,int((d+5)/2)+abs(shift),int((d+5)/2)+abs(shift)))
+            
+        max_length = max(max_cycle_lengths)
+        print("d=",d," - longest cycle:",max_length,"     achieved by shifting by: ",end="",file=f)
+        for shift in range(shift_min,shift_max):
+            if max_cycle_lengths[shift-shift_min] == max_length:
+                print(shift,end=" ",file=f)
+        print("",file=f)
+        f.close()
+
+check_left_right_shifts(3,200,2)
+                
 
 #d = 47
 #poly = discrete_sine_poly(d) # Check values of the discrete sine
