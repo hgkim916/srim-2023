@@ -103,4 +103,4 @@ print("Hello World!") # So you know the program is running
 #print(A)
 #LLL.reduction(A)
 #print(A)
-PossibleDynCompressing2Variables(13,19,1000,force_double_dependence = True,show_vector=False)
+PossibleDynCompressing2Variables(8,11,1000,force_double_dependence = True,show_vector=False)
