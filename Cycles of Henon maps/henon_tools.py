@@ -227,7 +227,7 @@ def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "sh
         return poly(x-shift)
     return new_poly
 
-def check_left_right_shifts(dmin,dmax,step):
+def check_cycles_left_right_shifts(dmin,dmax,step):
     for d in range(dmin,dmax,step):
         f = open("longest_cycle_shifts.txt",'a')
         init_poly = discrete_sine_poly(d)
@@ -246,7 +246,7 @@ def check_left_right_shifts(dmin,dmax,step):
         print("",file=f)
         f.close()
 
-check_left_right_shifts(3,200,2)
+check_cycles_left_right_shifts(3,200,2)
                 
 
 #d = 47
