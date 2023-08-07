@@ -246,6 +246,21 @@ def check_cycles_left_right_shifts(dmin,dmax,step):
         print("",file=f)
         f.close()
 
+def create_all_henon_graphics_discrete_sine():
+    create_henon_graphics_discrete_sine(3,49,figure_name="default/henon_d_")
+    create_henon_graphics_discrete_sine(3,49,figure_name="by_length/henon_bylength_d_",colour_style="LENGTH")
+    create_henon_graphics_discrete_sine(3,49,figure_name="longest/henon_longest_d_",colour_style="LONGEST")
+    create_henon_graphics_discrete_sine(3,49,figure_name="default/henon_negative_d_",negative=True)
+    create_henon_graphics_discrete_sine(3,49,figure_name="by_length/henon_negative_bylength_d_",colour_style="LENGTH",negative=True)
+    create_henon_graphics_discrete_sine(3,49,figure_name="longest/henon_negative_longest_d_",colour_style="LONGEST",negative=True)
+    create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/default/henon_d_",x_coefficient=1)
+    create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/by_length/henon_bylength_d_",colour_style="LENGTH",x_coefficient=1)
+    create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/longest/henon_longest_d_",colour_style="LONGEST",x_coefficient=1)
+    create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/default/henon_d_",negative=True,x_coefficient=1)
+    create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/by_length/henon_bylength_d_",colour_style="LENGTH",negative=True,x_coefficient=1)
+    create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/longest/henon_longest_d_",colour_style="LONGEST",negative=True,x_coefficient=1)
+
+
 check_cycles_left_right_shifts(3,200,2)
                 
 
@@ -256,18 +271,3 @@ check_cycles_left_right_shifts(3,200,2)
 
 #for i in range(-8,9):
 #    print(i,poly(i))
-
-#create_henon_graphics_discrete_sine(3,49,figure_name="default/henon_d_")
-#create_henon_graphics_discrete_sine(3,49,figure_name="by_length/henon_bylength_d_",colour_style="LENGTH")
-#create_henon_graphics_discrete_sine(3,49,figure_name="longest/henon_longest_d_",colour_style="LONGEST")
-#create_henon_graphics_discrete_sine(3,49,figure_name="default/henon_negative_d_",negative=True)
-#create_henon_graphics_discrete_sine(3,49,figure_name="by_length/henon_negative_bylength_d_",colour_style="LENGTH",negative=True)
-#create_henon_graphics_discrete_sine(3,49,figure_name="longest/henon_negative_longest_d_",colour_style="LONGEST",negative=True)
-
-#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/default/henon_d_",x_coefficient=1)
-#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/by_length/henon_bylength_d_",colour_style="LENGTH",x_coefficient=1)
-#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/positive_discrete_sine/longest/henon_longest_d_",colour_style="LONGEST",x_coefficient=1)
-
-#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/default/henon_d_",negative=True,x_coefficient=1)
-#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/by_length/henon_bylength_d_",colour_style="LENGTH",negative=True,x_coefficient=1)
-#create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/longest/henon_longest_d_",colour_style="LONGEST",negative=True,x_coefficient=1)
