@@ -87,7 +87,6 @@ def trace_pt(p,X,box_range,x_coefficient=-1):        # follows the orbit of a po
             return []
         if abs(X[0])>box_range or abs(X[1])>box_range:
             return []               # if we iterate outside the d+2 box, we don't want to plot the orbit at all
-    orbit.append(X)                 # add the last vertex to complete the orbit
     return orbit
 
 def plot_orbit (orbit,colour_parameter,box_range,colour_style="DEFAULT"):         # plot the orbit
@@ -100,13 +99,13 @@ def plot_orbit (orbit,colour_parameter,box_range,colour_style="DEFAULT"):       
     if colour_style == "PARAMETER":
         col = cm.cool(colour_parameter)
 
-    if len(orbit) == 2:     # this must be a fixed point
+    if len(orbit) == 1:     # this must be a fixed point
         plt.plot(orbit[0][0],orbit[0][1],marker=r'$\circlearrowleft$',ms=300/box_range,color = col)
     else:
-        xs = [orbit[i][0] for i in range(len(orbit)-1)]
-        ys = [orbit[i][1] for i in range(len(orbit)-1)]
+        xs = [orbit[i][0] for i in range(len(orbit))]
+        ys = [orbit[i][1] for i in range(len(orbit))]
         plt.scatter(xs,ys,color = col)              # plots the individual vertices
-
+        orbit.append(orbit[0])      # adds the first vertex to the end, to create a loop
         for k in range(len(orbit)-1):
             plt.arrow(orbit[k][0],orbit[k][1],orbit[k+1][0]-orbit[k][0],orbit[k+1][1]-orbit[k][1],width=.01,color = col,alpha =0.2)         # plots an arrow between two consecutive iterates
 
@@ -125,9 +124,9 @@ def find_longest_cycle_length(p,escape_radius,check_radius,x_coefficient=-1): # 
                     continue
                 #print(orbit)
                 found_points.extend(orbit)
-                if len(orbit)-1 > largest_orbit_size:
+                if len(orbit)> largest_orbit_size:
                     #print(orbit)
-                    largest_orbit_size = len(orbit)-1
+                    largest_orbit_size = len(orbit)
     return largest_orbit_size
 
 def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",reference_box_size=0,colour_style="DEFAULT",x_coefficient=-1):
@@ -209,7 +208,7 @@ def count_cycle_lengths(p,escape_radius,check_radius,x_coefficient=-1): # return
                 continue
             else:
                 orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius,x_coefficient=x_coefficient)
-                orbit_length = len(orbit)-1
+                orbit_length = len(orbit)
                 if orbit_length == -1:
                     continue
                 #print(orbit)
@@ -221,6 +220,22 @@ def count_cycle_lengths(p,escape_radius,check_radius,x_coefficient=-1): # return
                 found_points.extend(orbit)
     lengths = {a:b for a,b in sorted(lengths.items())}
     return lengths
+
+def count_preper(p,range,x_coefficient):      # returns the total number of preperiodic points of the Henon map of polynomial p in the box given by range
+    found_points = []
+
+    for x_tocheck in range(-range,range):
+        for y_tocheck in range(-range,range):
+            if [x_tocheck,y_tocheck] in found_points:
+                continue
+            else:
+                orbit = trace_pt(p,[x_tocheck,y_tocheck],range,x_coefficient=x_coefficient)
+                if len(orbit) == 0:
+                    continue
+                #print(orbit)
+                found_points.extend(orbit)
+                
+    return len(found_points)
 
 def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "shift" to the right
     def new_poly(x):
@@ -245,6 +260,41 @@ def check_cycles_left_right_shifts(dmin,dmax,step):
                 print(shift,end=" ",file=f)
         print("",file=f)
         f.close()
+
+def check_no_of_preper_shifted_polys(dmin,dmax,step):
+    for d in range(dmin,dmax,step):
+        f = open("no_of_preper_of_shifts.txt",'a')
+        print("d=",d,":",file=f)
+        f.close()
+        init_poly = discrete_sine_poly(d)
+        shift_min = -2
+        shift_max = 2
+        for shift in range(shift_min,shift_max+1):
+            shift_poly = shift_poly_in_x(shift,init_poly)
+            f = open("no_of_preper_of_shifts.txt",'a')
+            print("shift =",shift,"gives",count_preper(shift_poly,int((d+1)/2)+abs(shift),-1),"preperiodic pts",file=f)
+            f.close()
+        f = open("no_of_preper_of_shifts.txt",'a')
+        print(" ",file=f)
+        f.close()
+
+def check_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step):
+    for d in range(dmin,dmax,step):
+        f = open("no_of_preper_and_max_cycle_of_shifts.txt",'a')
+        print("d=",d,":",file=f)
+        f.close()
+        init_poly = discrete_sine_poly(d)
+        shift_min = -2
+        shift_max = 2
+        for shift in range(shift_min,shift_max+1):
+            shift_poly = shift_poly_in_x(shift,init_poly)
+            f = open("no_of_preper_and_max_cycle_of_shifts.txt",'a')
+            print("shift =",shift,"gives",count_preper(shift_poly,int((d+1)/2)+abs(shift),-1),"preperiodic pts and a max cycle of length",find_longest_cycle_length(shift_poly,int((d+5)/2)+abs(shift),int((d+5)/2)+abs(shift)),file=f)
+            f.close()
+        f = open("no_of_preper_and_max_cycle_of_shifts.txt",'a')
+        print(" ",file=f)
+        f.close()
+
 
 def create_all_henon_graphics_discrete_sine():
     create_henon_graphics_discrete_sine(3,49,figure_name="default/henon_d_")
