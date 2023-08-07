@@ -221,20 +221,20 @@ def count_cycle_lengths(p,escape_radius,check_radius,x_coefficient=-1): # return
     lengths = {a:b for a,b in sorted(lengths.items())}
     return lengths
 
-def count_preper(p,range,x_coefficient):      # returns the total number of preperiodic points of the Henon map of polynomial p in the box given by range
+def count_preper(p,radius,x_coefficient):      # returns the total number of preperiodic points of the Henon map of polynomial p in the box given by range
     found_points = []
 
-    for x_tocheck in range(-range,range):
-        for y_tocheck in range(-range,range):
+    for x_tocheck in range(-radius,radius):
+        for y_tocheck in range(-radius,radius):
             if [x_tocheck,y_tocheck] in found_points:
                 continue
             else:
-                orbit = trace_pt(p,[x_tocheck,y_tocheck],range,x_coefficient=x_coefficient)
+                orbit = trace_pt(p,[x_tocheck,y_tocheck],radius,x_coefficient=x_coefficient)
                 if len(orbit) == 0:
                     continue
                 #print(orbit)
                 found_points.extend(orbit)
-                
+    found_points = [list(tupl) for tupl in {tuple(item) for item in found_points }]   # sanity check, ensures no duplicates     
     return len(found_points)
 
 def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "shift" to the right
@@ -271,8 +271,9 @@ def check_no_of_preper_shifted_polys(dmin,dmax,step):
         shift_max = 2
         for shift in range(shift_min,shift_max+1):
             shift_poly = shift_poly_in_x(shift,init_poly)
+            no_of_preper = count_preper(shift_poly,int((d+1)/2)+abs(shift),-1)
             f = open("no_of_preper_of_shifts.txt",'a')
-            print("shift =",shift,"gives",count_preper(shift_poly,int((d+1)/2)+abs(shift),-1),"preperiodic pts",file=f)
+            print("shift =",shift,"gives",no_of_preper,"preperiodic pts",file=f)
             f.close()
         f = open("no_of_preper_of_shifts.txt",'a')
         print(" ",file=f)
@@ -288,8 +289,10 @@ def check_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step):
         shift_max = 2
         for shift in range(shift_min,shift_max+1):
             shift_poly = shift_poly_in_x(shift,init_poly)
+            no_of_preper = count_preper(shift_poly,int((d+1)/2)+abs(shift),-1)
+            max_cycle = find_longest_cycle_length(shift_poly,int((d+5)/2)+abs(shift),int((d+5)/2)+abs(shift))
             f = open("no_of_preper_and_max_cycle_of_shifts.txt",'a')
-            print("shift =",shift,"gives",count_preper(shift_poly,int((d+1)/2)+abs(shift),-1),"preperiodic pts and a max cycle of length",find_longest_cycle_length(shift_poly,int((d+5)/2)+abs(shift),int((d+5)/2)+abs(shift)),file=f)
+            print("shift =",shift,"gives",no_of_preper,"preperiodic pts and a max cycle of length",max_cycle,file=f)
             f.close()
         f = open("no_of_preper_and_max_cycle_of_shifts.txt",'a')
         print(" ",file=f)
@@ -311,7 +314,7 @@ def create_all_henon_graphics_discrete_sine():
     create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/longest/henon_longest_d_",colour_style="LONGEST",negative=True,x_coefficient=1)
 
 
-check_cycles_left_right_shifts(3,200,2)
+check_no_of_preper_AND_max_cycle_shifted_polys(3,200,2)
                 
 
 #d = 47
