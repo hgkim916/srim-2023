@@ -242,7 +242,8 @@ def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "sh
         return poly(x-shift)
     return new_poly
 
-def check_cycles_left_right_shifts(dmin,dmax,step):
+
+def save_max_cycle_left_right_shifts(dmin,dmax,step):
     for d in range(dmin,dmax,step):
         f = open("longest_cycle_shifts.txt",'a')
         init_poly = discrete_sine_poly(d)
@@ -261,7 +262,7 @@ def check_cycles_left_right_shifts(dmin,dmax,step):
         print("",file=f)
         f.close()
 
-def check_no_of_preper_shifted_polys(dmin,dmax,step):
+def save_no_of_preper_shifted_polys(dmin,dmax,step):
     for d in range(dmin,dmax,step):
         f = open("no_of_preper_of_shifts.txt",'a')
         print("d=",d,":",file=f)
@@ -279,7 +280,7 @@ def check_no_of_preper_shifted_polys(dmin,dmax,step):
         print(" ",file=f)
         f.close()
 
-def check_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step):
+def save_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step):
     for d in range(dmin,dmax,step):
         f = open("no_of_preper_and_max_cycle_of_shifts.txt",'a')
         print("d=",d,":",file=f)
@@ -298,7 +299,7 @@ def check_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step):
         print(" ",file=f)
         f.close()
 
-def get_coord_shifted(dmin,dmax,step):
+def save_coord_shifted(dmin,dmax,step):
     shift_min = -2
     shift_max = 2
     for shift in range(shift_min,shift_max+1):
@@ -312,11 +313,110 @@ def get_coord_shifted(dmin,dmax,step):
             # no_of_preper = count_preper(shift_poly,int((d+1)/2)+abs(shift),-1)
             max_cycle = find_longest_cycle_length(shift_poly,int((d+5)/2)+abs(shift),int((d+5)/2)+abs(shift))
             f = open("coord.txt",'a')
-            print((d,max_cycle),file=f)     # choose from here what to display
+            print((d,max_cycle),file=f)
             f.close()
         f = open("coord.txt",'a')
         print(" ",file=f)
         f.close()
+
+def expected_tot_preper(d,shift):
+    if d%6 == 1:
+        if shift == 0:
+            return d**2 + int((-8*d+56)/3)
+        elif abs(shift) == 1:
+            return d**2 + 2*d + 4
+        elif abs(shift) == 2:
+            return d**2 - 6*d + 18
+        else:
+            print("No expected number when shift is", shift)
+            return 0
+    elif d%6 == 3:
+        if shift == 0:
+            return d**2 + 8
+        elif shift == -1:
+            return d**2 + 4*d
+        elif shift == 1:
+            return d**2 + 4*d + 1
+        elif abs(shift) == 2:
+            return d**2 - 4*d + 7
+        else:
+            print("No expected number when shift is", shift)
+            return 0
+    elif d%6 == 5:
+        if shift == 0:
+            return d**2 + int((-8*d+40)/3)
+        elif abs(shift) == 1:
+            return d**2 - 2*d + 29
+        elif abs(shift) == 2:
+            return d**2 + int((-22*d+161)/3)
+        else:
+            print("No expected number when shift is", shift)
+            return 0
+    else:
+        print("No expected number when d=",d)
+        return 0
+
+def expected_max_cycle(d,shift):
+    if d%6 == 1:
+        if shift == 0:
+            return int((8*d+10)/3)
+        elif abs(shift) == 1:
+            return int((10*d-7)/3)
+        elif abs(shift) == 2:
+            return int((16*d-61)/3)
+        else:
+            print("No expected max length when shift=", shift)
+            return 0
+    elif d%6 == 3:
+        if shift == 0:
+            return 20
+        elif abs(shift) == 1:
+            return 8*d-39
+        elif abs(shift) == 2:
+            return 60
+        else:
+            print("No expected max length when shift=", shift)
+            return 0
+    elif d%6 == 5:
+        if shift == 0:
+            return 20
+        elif abs(shift) == 1:
+            return int((14*d-31)/3)
+        elif abs(shift) == 2:
+            return int((28*d-185)/3)
+        else:
+            print("No expected max length when shift=", shift)
+            return 0
+    else:
+        print("No expected max length when d=",d)
+        return 0
+
+def check_expected_vals(dmin,dmax,step=2):
+    f = open("check_expected.txt",'a')          # creates the file if it doesn't exist
+    f.close()
+    f = open("check_expected.txt",'w')          # deletes the previous contents
+    f.close()
+    for d in range(dmin,dmax,step):
+        init_poly = discrete_sine_poly(d)
+        shift_min = -2
+        shift_max = 2
+        all_true = True
+        
+        f = open("check_expected.txt",'a')
+        for shift in range(shift_min,shift_max+1):
+            shift_poly = shift_poly_in_x(shift,init_poly)
+            no_of_preper = count_preper(shift_poly,int((d+1)/2)+abs(shift),-1)
+            max_cycle = find_longest_cycle_length(shift_poly,int((d+5)/2)+abs(shift),int((d+5)/2)+abs(shift))
+            if no_of_preper!=expected_tot_preper(d,shift):
+                print("d=",d,", shift=",shift,": # of preper expected:",expected_tot_preper(d,shift),", obtained:",no_of_preper,file=f)
+                all_true = False
+            if max_cycle!=expected_max_cycle(d,shift):
+                print("d=",d,", shift=",shift,": max cycle length expected:",expected_max_cycle(d,shift),", obtained:",no_of_preper,file=f)
+                all_true = False
+        if all_true:
+            print("d=",d,"-- good!",file=f)
+        f.close()
+        
 
 
 def create_all_henon_graphics_discrete_sine():
@@ -334,8 +434,6 @@ def create_all_henon_graphics_discrete_sine():
     create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/longest/henon_longest_d_",colour_style="LONGEST",negative=True,x_coefficient=1)
 
 
-# check_no_of_preper_AND_max_cycle_shifted_polys(3,200,2)
-                
 
 #d = 47
 #poly = discrete_sine_poly(d) # Check values of the discrete sine
