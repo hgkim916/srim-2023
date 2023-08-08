@@ -242,8 +242,7 @@ def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "sh
         return poly(x-shift)
     return new_poly
 
-
-def save_max_cycle_left_right_shifts(dmin,dmax,step):
+def save_max_cycle_left_right_shifts(dmin,dmax,step,shift_min=-2,shift_max=2):
     for d in range(dmin,dmax,step):
         f = open("longest_cycle_shifts.txt",'a')
         init_poly = discrete_sine_poly(d)
@@ -262,7 +261,7 @@ def save_max_cycle_left_right_shifts(dmin,dmax,step):
         print("",file=f)
         f.close()
 
-def save_no_of_preper_shifted_polys(dmin,dmax,step):
+def save_no_of_preper_shifted_polys(dmin,dmax,step,shift_min=-2,shift_max=2):
     for d in range(dmin,dmax,step):
         f = open("no_of_preper_of_shifts.txt",'a')
         print("d=",d,":",file=f)
@@ -280,14 +279,12 @@ def save_no_of_preper_shifted_polys(dmin,dmax,step):
         print(" ",file=f)
         f.close()
 
-def save_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step):
+def save_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step,shift_min=-2,shift_max=2):
     for d in range(dmin,dmax,step):
         f = open("no_of_preper_and_max_cycle_of_shifts.txt",'a')
         print("d=",d,":",file=f)
         f.close()
         init_poly = discrete_sine_poly(d)
-        shift_min = -2
-        shift_max = 2
         for shift in range(shift_min,shift_max+1):
             shift_poly = shift_poly_in_x(shift,init_poly)
             no_of_preper = count_preper(shift_poly,int((d+1)/2)+abs(shift),-1)
@@ -299,9 +296,7 @@ def save_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step):
         print(" ",file=f)
         f.close()
 
-def save_coord_shifted(dmin,dmax,step):
-    shift_min = -2
-    shift_max = 2
+def save_coord_shifted(dmin,dmax,step,shift_min=-2,shift_max=2):
     for shift in range(shift_min,shift_max+1):
         f = open("coord.txt",'a')
         print("shift=",shift,":",file=f)
@@ -391,15 +386,13 @@ def expected_max_cycle(d,shift):
         print("No expected max length when d=",d)
         return 0
 
-def check_expected_vals(dmin,dmax,step=2):
+def check_expected_vals(dmin,dmax,step=2,shift_min=-2,shift_max=2):
     f = open("check_expected.txt",'a')          # creates the file if it doesn't exist
     f.close()
     f = open("check_expected.txt",'w')          # deletes the previous contents
     f.close()
     for d in range(dmin,dmax,step):
         init_poly = discrete_sine_poly(d)
-        shift_min = -2
-        shift_max = 2
         all_true = True
         
         f = open("check_expected.txt",'a')
@@ -416,9 +409,7 @@ def check_expected_vals(dmin,dmax,step=2):
         if all_true:
             print("d=",d,"-- good!",file=f)
         f.close()
-        
-
-
+           
 def create_all_henon_graphics_discrete_sine():
     create_henon_graphics_discrete_sine(3,49,figure_name="default/henon_d_")
     create_henon_graphics_discrete_sine(3,49,figure_name="by_length/henon_bylength_d_",colour_style="LENGTH")
