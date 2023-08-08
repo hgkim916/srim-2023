@@ -298,6 +298,26 @@ def check_no_of_preper_AND_max_cycle_shifted_polys(dmin,dmax,step):
         print(" ",file=f)
         f.close()
 
+def get_coord_shifted(dmin,dmax,step):
+    shift_min = -2
+    shift_max = 2
+    for shift in range(shift_min,shift_max+1):
+        f = open("coord.txt",'a')
+        print("shift=",shift,":",file=f)
+        f.close()
+
+        for d in range(dmin,dmax,step):
+            init_poly = discrete_sine_poly(d)
+            shift_poly = shift_poly_in_x(shift,init_poly)
+            # no_of_preper = count_preper(shift_poly,int((d+1)/2)+abs(shift),-1)
+            max_cycle = find_longest_cycle_length(shift_poly,int((d+5)/2)+abs(shift),int((d+5)/2)+abs(shift))
+            f = open("coord.txt",'a')
+            print((d,max_cycle),file=f)     # choose from here what to display
+            f.close()
+        f = open("coord.txt",'a')
+        print(" ",file=f)
+        f.close()
+
 
 def create_all_henon_graphics_discrete_sine():
     create_henon_graphics_discrete_sine(3,49,figure_name="default/henon_d_")
@@ -314,7 +334,7 @@ def create_all_henon_graphics_discrete_sine():
     create_henon_graphics_discrete_sine(3,29,figure_name="x_coefficient_1/negative/longest/henon_longest_d_",colour_style="LONGEST",negative=True,x_coefficient=1)
 
 
-check_no_of_preper_AND_max_cycle_shifted_polys(3,200,2)
+# check_no_of_preper_AND_max_cycle_shifted_polys(3,200,2)
                 
 
 #d = 47
