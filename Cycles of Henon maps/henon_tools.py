@@ -67,7 +67,64 @@ def discrete_sine_poly(d,negative = False):      # returns the discrete sine pol
     
     print("Warning, this value of d has not yet been implemented!")
     return None
+
+def discrete_sine(d,negative = False):
+    if d%4==1: # given by 0 1 1 0 -1 -1 0 ... (starting at 0)
+        def p(x):
+            # define it periodically 
+            if x%3 == 0:
+                val = 0
+            elif x%6 == 1 or x%6 == 2:
+                val = 1
+            else:
+                val = -1
             
+            if negative:
+                val = -val
+            return val
+        return p
+    elif d%4==3: # given by 0 -1 -1 0 1 1 0 ... (starting at 0)
+        def p(x):
+            # define it periodically 
+            if x%3 == 0:
+                val = 0
+            elif x%6 == 1 or x%6 == 2:
+                val = -1
+            else:
+                val = 1
+            
+            if negative:
+                val = -val
+            return val
+        return p
+    elif d%4==2: # given by -1 -1 0 1 1 0 -1 ... (starting at -1/2)
+        def p(x):
+            x = x+1/2
+            # define it periodically 
+            if x%3 == 2:
+                val = 0
+            elif x%6 == 3 or x%6 == 4:
+                val = 1
+            else:
+                val = -1
+            return val
+        return p
+    elif d%4==0: # given by 1 1 0 -1 -1 0 1 ... (starting at -1/2)
+        def p(x):
+            x = x+1/2
+            # define it periodically 
+            if x%3 == 2:
+                val = 0
+            elif x%6 == 3 or x%6 == 4:
+                val = -1
+            else:
+                val = 1
+            return val
+        return p
+    print("Warning, this value of d has not yet been implemented!")
+    return None
+
+
 def henon(p,X,x_coefficient=-1):     # this is the Henon map of polynomial p: (x,y) -> (y, x_coefficient*x + p(y))
     result = p(X[1])
     if result == None:
