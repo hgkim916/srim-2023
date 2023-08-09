@@ -3,6 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
+import matplotlib.patches as mpatches
+import matplotlib as mpl
 
 def discrete_sine_poly(d,negative = False):      # returns the discrete sine polynomial p.
                                 # defined in a box, outside of which the Henon maps diverge to infty.
@@ -161,7 +163,7 @@ def plot_orbit (orbit,colour_parameter,box_range,colour_style="DEFAULT"):       
         xs = [orbit[i][0] for i in range(len(orbit))]
         ys = [orbit[i][1] for i in range(len(orbit))]
         plt.scatter(xs,ys,color = col)              # plots the individual vertices
-        orbit.append(orbit[0])      # adds the first vertex to the end, to create a loop
+        orbit.append(orbit[0])
         for k in range(len(orbit)-1):
             plt.arrow(orbit[k][0],orbit[k][1],orbit[k+1][0]-orbit[k][0],orbit[k+1][1]-orbit[k][1],width=.01,color = col,alpha =0.2)         # plots an arrow between two consecutive iterates
 
@@ -180,15 +182,20 @@ def find_longest_cycle_length(p,escape_radius,check_radius,x_coefficient=-1): # 
                     continue
                 #print(orbit)
                 found_points.extend(orbit)
-                if len(orbit)> largest_orbit_size:
+                if len(orbit) > largest_orbit_size:
                     #print(orbit)
                     largest_orbit_size = len(orbit)
     return largest_orbit_size
 
-def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",reference_box_size=0,colour_style="DEFAULT",x_coefficient=-1):
+def create_henon_graphic(p,escape_radius,check_radius,
+                         figure_name="output",figure_title="",
+                         figure_size=10,
+                         reference_box_size=0,
+                         colour_style="DEFAULT",
+                         x_coefficient=-1):
 
     found_points = []        # store all the vertices whose orbits we've already plotted
-    plt.figure(figsize = (15,15))
+    fig,ax = plt.subplots(figsize = (figure_size,figure_size))
 
     if reference_box_size>0: # Draw the reference box
         xs = [-reference_box_size,-reference_box_size,reference_box_size,reference_box_size,-reference_box_size]     
@@ -210,7 +217,7 @@ def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",refer
             
             orbit = trace_pt(p,[i,j],escape_radius,x_coefficient=x_coefficient)     # get the orbit by tracing the point
             if len(orbit) == 0: continue
-            # print(orbit)
+            #print(orbit)
             found_points.extend(orbit)          # add each iterate to the list of plotted vertices
             if colour_style == "DEFAULT":
                 plot_orbit(orbit,count,escape_radius)       # plot the orbit    
@@ -230,8 +237,29 @@ def create_henon_graphic(p,escape_radius,check_radius,figure_name="output",refer
             count += 1                   # for count-based colour styles
 
     # plot formatting:
+    
+    if colour_style == "LENGTH":
+        cmap = mpl.cm.cool
+        norm = mpl.colors.Normalize(vmin=1, vmax=longest_cycle)
+        fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap),ax=ax
+                 ,location='bottom', label='Length of cycle', ticks=[1,longest_cycle]
+                 ,fraction=0.05, pad=0.07
+                 )
+    elif colour_style == "LONGEST":
+        cmap = mpl.cm.cool
+        bounds = [1, 8, 9, 10]
+        norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+        cbar = fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
+                    ,ax=ax, location='bottom', spacing='proportional'
+                    ,fraction=0.05, pad=0.07)
+        cbar.ax.tick_params(length=0)
+        cbar.set_ticks(ticks=[1,4.5,8,9,10],labels=["","Not longest cycle","","Longest cycle(s)",""])
+
 
     plt.axis('equal')
+    if figure_title != "":
+        plt.title(figure_title)
     plt.savefig(figure_name)
     plt.close()
 
@@ -265,7 +293,7 @@ def count_cycle_lengths(p,escape_radius,check_radius,x_coefficient=-1): # return
             else:
                 orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius,x_coefficient=x_coefficient)
                 orbit_length = len(orbit)
-                if orbit_length == -1:
+                if orbit_length == 0:
                     continue
                 #print(orbit)
                 if orbit_length not in lengths:
@@ -294,6 +322,7 @@ def count_preper(p,radius,x_coefficient):      # returns the total number of pre
     return len(found_points)
 
 def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "shift" to the right
+                                    # outputs poly(x-shift)
     def new_poly(x):
         return poly(x-shift)
     return new_poly
@@ -506,12 +535,25 @@ def print_length_of_longest_cycles_discrete_sine(d_min,d_max,negative = False,x_
         print(find_longest_cycle_length(discrete_sine(d,negative=negative),40*d,2*d,x_coefficient=x_coefficient))
 
 
-print_length_of_longest_cycles_discrete_sine(3,3+12)
-create_all_henon_graphics_discrete_sine()
-#d = 47
-#poly = discrete_sine_poly(d) # Check values of the discrete sine
-#print(find_longest_cycle_length(poly,int((d+5)/2),int((d+5)/2)))
-#create_henon_graphic(poly,int((d+5)/2),int((d+5)/2),figure_name="output",reference_box_size=0,colour_style="LONGEST")
+#check_cycles_left_right_shifts(3,200,2)
+#d = 7
+#shift = 1
+#poly = shift_poly_in_x(shift,discrete_sine_poly(d))
+#create_henon_graphic(poly,int((d+5)/2)+abs(shift),int((d+5)/2)+shift
+#                             ,figure_name="output"
+#                             ,figure_size=5
+#                             ,reference_box_size=0
+#                             ,colour_style="LONGEST"
+#                             )
+                 
 
+#for shift in [3]:
+#    for d in range(3,51,2):
+#        poly = shift_poly_in_x(shift,discrete_sine_poly(d))
+#        create_henon_graphic(poly,int((d+5)/2)+abs(shift),int((d+5)/2)+shift,
+#                             figure_name="outputs/longest_shift_"+str(shift)+"_d_"+str(d),
+#                             reference_box_size=0,colour_style="LONGEST",
+#                             figure_title="Henon map of shifted discrete-sine polynomial, coloured by longest cycle length")
+        
 #for i in range(-8,9):
 #    print(i,poly(i))
