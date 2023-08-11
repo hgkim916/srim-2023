@@ -225,7 +225,7 @@ def create_henon_graphic(p,escape_radius,check_radius,
                 colour_param = round((len(orbit)-1)/longest_cycle*255)
                 plot_orbit(orbit,colour_param,escape_radius,colour_style="PARAMETER")
             elif colour_style == "LONGEST":
-                if len(orbit)-1 == longest_cycle:
+                if len(orbit) == longest_cycle:
                     if exceptional_cycle_already_plotted:
                         colour_param = 127
                     else:
