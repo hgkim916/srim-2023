@@ -1,4 +1,3 @@
-# To run: go to https://sagecell.sagemath.org/ or download SageMath (lmao why is it so hard to)
 from fpylll import *
 from fpylll.fplll.gso import MatGSO
 import math
