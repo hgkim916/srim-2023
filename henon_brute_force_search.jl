@@ -139,4 +139,4 @@ function search_quadr(max_height)           # searches among all the quadratics 
     println("done!")
 end
 
-search_quadr(5)
+search_quadr(3)
