@@ -110,6 +110,25 @@ function search_quadr(max_height)           # searches among all the quadratics 
             end
         end
         println("done with a=",a)
+
+        # We will run the -a case from here, so that the order in which we look at a is 0,1,-1,2,-2,... - I think this makes more sense.
+        if a!=0
+            a = -a
+            Threads.@threads for b in 1:max_ab
+                if gcd(a, b) == 1
+                    f = Henon_quadr_given_ab(a, b)
+                    longest_cycle, point_on_cycle = get_max_cycle_quadr(f, a, b,all_primes)
+                    Threads.atomic_max!(max_cycle_length, longest_cycle)
+                    if longest_cycle >= max_cycle_length[]       # better than anything so far
+                        println(longest_cycle, " is achieved by a/b = ", a//b," starting at [",point_on_cycle[1],",",point_on_cycle[2],"]")
+                        orbit = trace_pt(f,get_euclidean_bound_quadr(a,b),get_p_adic_bound_quadr(a,b,all_primes),point_on_cycle)
+                        println("Orbit achieving this is: ",orbit)
+                    end
+                end
+            end
+            println("done with a=",a)
+            a=-a
+        end
     end
     println("done!")
 end
