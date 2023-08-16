@@ -108,6 +108,9 @@ function search_quadr(max_height)           # searches among all the quadratics 
                     println("Orbit achieving this is: ",orbit)
                 end
             end
+            if a!=0
+                println("done with a/b=",a//b)
+            end
         end
         println("done with a=",a)
 
@@ -124,6 +127,9 @@ function search_quadr(max_height)           # searches among all the quadratics 
                         orbit = trace_pt(f,get_euclidean_bound_quadr(a,b),get_p_adic_bound_quadr(a,b,all_primes),point_on_cycle)
                         println("Orbit achieving this is: ",orbit)
                     end
+                end
+                if a!=0
+                    println("done with a/b=",a//b)
                 end
             end
             println("done with a=",a)
