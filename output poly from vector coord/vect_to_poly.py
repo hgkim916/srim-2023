@@ -3,20 +3,31 @@
 import numpy as np
 import math
 
-def unsigned_stirling_num_recc(n,k):        # computes the unsigned Stirling numbers of the first kind recursively, see wiki page below
+def unsigned_stirling_first_kind(n,k):
+    '''
+    Computes the unsigned Stirling numbers of the first kind, recursively.
+    See the Wikipedia page for Stirling numbers of the 1st kind for more information.
+    '''
     if k == 0 and n == 0:
         return 1
     elif k == 0 or n == 0:
         return 0
     else:
-        return (n-1)*unsigned_stirling_num_recc(n-1,k) + unsigned_stirling_num_recc (n-1,k-1)
+        return (n-1)*unsigned_stirling_first_kind(n-1,k) + unsigned_stirling_first_kind (n-1,k-1)
 
+def basis_poly(i,d):
+    '''
+    Returns the coefficients of the polynomial d!*(x choose i), as a list [a_0, a_1, ..., a_{d-1}, a_d], where a_j is the coefficient of x^j.
+    See the Wikipedia page for Stirling numbers of the 1st kind for more information.
 
-def basis_poly(i,d):      # returns the polynomial d!*(x choose i) as a vector of the form [a_0, a_1, ..., a_{d-1}, a_d]
-    # Uses the expansion provided by the following wikipedia page: https://en.wikipedia.org/wiki/Stirling_numbers_of_the_first_kind
+    Requires that d is greater than or equal to i.
+    '''
+    if d < i:
+        raise ValueError("d must be greater than or equal to i.")
+
     p = np.zeros(d+1)
     for j in range(i+1):
-        p[j] = ((-1)**(i-j)*unsigned_stirling_num_recc(i,j)/math.factorial(i))*math.factorial(d)
+        p[j] = ((-1)**(i-j)*unsigned_stirling_first_kind(i,j)/math.factorial(i))*math.factorial(d)
     return p
 
 def GCD(v):     # recursively calculates the GCD of all the elements of v
@@ -24,7 +35,6 @@ def GCD(v):     # recursively calculates the GCD of all the elements of v
         return int(v[0])
     else:
         return int(math.gcd(int(v[0]),GCD(v[1:])))
-
 
 def print_poly(poly_v):         # prints the polynomial with coefficients given by poly_v into a "nice" format
     d = len(poly_v)-1
@@ -62,7 +72,6 @@ def translate(v,min_val):
             trans_v[j]+=((-1)**(i-j))*v[i]*math.comb(i,j)       # the x^j term in a_i*(x-1)^j  (where p(x) = a_0 + ... + a_d*x^d)
     trans_v[0]+=(1-min_val)*math.factorial(d)        # makes sure the min value achieved is precisely 1 by subtractinf the initial min and adding 1
     return trans_v
-
 
 def poly(v,vals):               # outputs the polynomial given by the vector v
                                 # vals is the values taken by this poly on {0,...,d+e}, used in rescaling it
