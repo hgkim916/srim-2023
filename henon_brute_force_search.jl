@@ -1,6 +1,21 @@
 using Base.Threads
 using LinearAlgebra
 
+function primes_sieve(n) # returns all the primes less than or equal to n
+    a = [true for i = 1:n]
+    primes = []
+    a[1] = false
+    for p = 2:n
+        if a[p]
+            push!(primes,p)
+            for i = 2*p:p:n
+                a[i] = false
+            end
+        end
+    end
+    return primes
+end
+
 function Henon_quadr_given_ab(a, b, x_coeff=-1)
     function f(X)
         x = X[1]
@@ -11,11 +26,26 @@ function Henon_quadr_given_ab(a, b, x_coeff=-1)
 end
 
 function get_euclidean_bound_quadr(a, b)
-    return 2*(1+max(1,abs(a//b)))
+    return 1+sqrt(1-a//b)
 end
 
 function get_p_adic_bound_quadr(a, b)
-    return b
+    primes = primes_sieve(b)
+    bound = 1
+    for p in primes
+        if denominator(b//p)==1      # i.e. p divides b
+            # Find exponent of p in fact of b:
+            exponent = 0
+            while denominator(b//p)==1
+                exponent +=1
+                b = b//p
+            end
+            bound = bound * p^(exponent+1)
+        elseif p == 2 || p == 3
+            bound = bound * p
+        end
+    end
+    return bound
 end
 
 function trace_pt(f, eucl_bound, padic_bound, X)
@@ -25,15 +55,15 @@ function trace_pt(f, eucl_bound, padic_bound, X)
         X = f(X)
         x = X[1]
         y = X[2]
-        if norm(X) > eucl_bound || denominator(x*padic_bound) > 1 || denominator(y*padic_bound) > 1
-            return nothing
+        if abs(x) >= eucl_bound || abs(y)>= eucl_bound || denominator(x*padic_bound) > 1 || denominator(y*padic_bound) > 1
+            return nothing``
         end
     end
     return orbit
 end
 
 function get_max_cycle_quadr(f, a, b)
-    eucl_bound = get_euclidean_bound_quadr(a, b)
+    eucl_bound = ceil(Int,get_euclidean_bound_quadr(a, b))
     padic_bound = get_p_adic_bound_quadr(a, b)
     max_cycle = 0
     point_on_max = []
