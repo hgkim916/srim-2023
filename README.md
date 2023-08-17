@@ -2,4 +2,8 @@
 
 Prerequisites: fpylll
 
-Completed programs: find_compression.py, vect_to_poly.py
+Programs currently WIP:
+find_compression.py
+polynomial_tools.py
+
+Completed programs:

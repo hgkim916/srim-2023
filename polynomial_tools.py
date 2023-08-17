@@ -28,37 +28,39 @@ def basis_poly_coeffs(i,d):
         p[j] = (-1)**(i-j)*unsigned_stirling_first_kind(i,j)*math.perm(d,d-i)
     return p
 
-def print_poly_from_coeffs(coefficients,denom = 1):
+def poly_coeffs_to_string(coefficients,denom = 1):
     '''
-    Given a list of coefficients, poly_v = d!*[a_0, a_1, ..., a_d], prints the polynomial
-    (a_0+a_1x+...+a_dx^d)/denom, simplified. 
+    Given a list of coefficients, poly_v = d!*[a_0, a_1, ..., a_d], returns the polynomial
+    (a_0+a_1x+...+a_dx^d)/denom, simplified, as a string.
     '''
     d = len(coefficients)-1
 
-    print("(",end="")
-    for i in range(d+1):        # prints term-by-term, in our nice format
+    poly_string = "("
+    for i in range(d+1):        # go term-by-term
         if coefficients[i] == 0: continue # skip term if 0
 
         if i==0:
-            print(int(coefficients[i]),end='') # prints out the constant term
+            poly_string += str(coefficients[i])
             continue
 
         if coefficients[i] == 1:
-            print("+x",end='') # prints out the x term without the power and without the coeff, but with a plus sign if it is 1
+            poly_string+="+x"
         elif coefficients[i] == -1:
-            print("-x",end='') # prints out the x term without the power and without the coeff, but with a minus sign if it is -1
+            poly_string+="-x"
         else:
-            print(('{:+}'.format(int(coefficients[i])))+"x",end='') # prints out the x term without the power
-      
+            poly_string+='{:+}'.format(coefficients[i])+"x"
+
         if i == 1:
             continue
         else:
-            print("^"+str(i),end='') # prints out the ^i part
+            poly_string+="^"+str(i)
     
     if denom == 1:
-        print(")")
+        poly_string+=")"
     else:
-        print(")/"+str(denom))          # finish it by dividing by d!, so that the expression looks nicer
+        poly_string+=")/"+str(denom)
+    
+    return poly_string
 
 def translated_poly_coeffs(coefficients,x_translation,y_translation):
     '''
@@ -70,7 +72,7 @@ def translated_poly_coeffs(coefficients,x_translation,y_translation):
         return coefficients
     
     d = len(coefficients)-1
-    translated_coeffs = np.zeros(d+1)
+    translated_coeffs = np.zeros(d+1,dtype=np.int_)
     
     for j in range(d+1):
         for i in range(j,d+1):
@@ -87,25 +89,25 @@ def translated_poly_coeffs(coefficients,x_translation,y_translation):
     else:
         return translated_poly_coeffs(translated_coeffs,x_translation+1,y_translation)
 
-def vector_to_coeffs(vector):
+def poly_coords_to_coeffs(coords):
     '''
-    Given a vector [u_0,u_1,...,u_d], gives the coefficients [a_0,a_1,...,a_d]
+    Given coords [u_0,u_1,...,u_d], gives the coefficients [a_0,a_1,...,a_d]
     of the polynomial u_0(x choose 0)+u_1(x choose 1)+...+u_d(x choose d), where a_i is the coefficient of x^i.
     '''
-    d = len(vector)-1
+    d = len(coords)-1
     coefficients = np.zeros(d+1,dtype=np.int_)
-    for i in range(len(vector)):
-        coefficients += vector[i]*basis_poly_coeffs(i,d)      # stores the polynomial coefficients in the form d!*[a_0, a_1, ..., a_{d-1}, a_d] 
+    for i in range(len(coords)):
+        coefficients += coords[i]*basis_poly_coeffs(i,d)      # stores the polynomial coefficients in the form d!*[a_0, a_1, ..., a_{d-1}, a_d] 
     return coefficients
 
-def print_poly_from_vector(vector,x_translation=0,y_translation=0):
+def poly_coords_to_string(coords,x_translation=0,y_translation=0):
     '''
-    Given a vector [u_0,u_1,...,u_d], prints the polynomial u_0(x choose 0)+u_1(x choose 1)+...+u_d(x choose d),
+    Given coords [u_0,u_1,...,u_d], prints the polynomial u_0(x choose 0)+u_1(x choose 1)+...+u_d(x choose d),
     simplifying to form a_0+a_1x+...+a_dx^d.
     Optionally, also translate the polynomial first.
     '''
-    d = len(vector)-1
-    coefficients = vector_to_coeffs(vector)
+    d = len(coords)-1
+    coefficients = poly_coords_to_coeffs(coords)
     # Note we need to translate the polynomial in the y-direction by a multiple of d!.
     translated_coeffs = translated_poly_coeffs(coefficients,x_translation=x_translation,y_translation=y_translation*math.factorial(d))
-    print_poly_from_coeffs(translated_coeffs,denom=math.factorial(d))
+    return poly_coeffs_to_string(translated_coeffs,denom=math.factorial(d))
