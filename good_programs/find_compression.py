@@ -4,7 +4,8 @@ import math
 import polynomial_tools
 
 def lambda_d_e_basis(d,e):
-    '''Returns the basis (u_0, u_1, ..., u_(d+1)) as an IntegerMatrix object, with rows as basis vectors.
+    '''
+    Returns the basis (u_0, u_1, ..., u_(d+1)) as an IntegerMatrix object, with rows as basis vectors.
     '''
     basis = IntegerMatrix(d+1,d+e+1)
     for i in range(d+1):
