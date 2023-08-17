@@ -14,10 +14,10 @@ def lambda_d_e_basis(d,e):
 
 def print_dynamical_compression(degree,compression,number_of_solutions,
                                show_only_dyn_comp = True,
-                               show_vector = True,
+                               show_vector = False,
                                show_polynomial = False,
                                show_translated_poly = False,
-                               print_all_failures = True):
+                               print_failures = True):
     '''
     Prints all possible dynamically compressing IVPs of degree d which send [d+compression] -> [d+compression],
         not repeating identical polynomials up to constants.
@@ -30,7 +30,7 @@ def print_dynamical_compression(degree,compression,number_of_solutions,
                                    This must be finite, due to fpylll limitations.
         show_only_dyn_comp (bool): (Default: True) Whether to only display genuinely dynamically compressing polynomials. 
                                                   If false (default), e.g. a polynomial sending [10] -> [15] would display.
-        show_vector (bool): (Default: True) In the output, also print the associated vector in the lattice LambdaDE.
+        show_vector (bool): (Default: False) In the output, also print the associated vector in the lattice LambdaDE.
         show_polynomial (bool): (Default: False) In the output, also print the actual polynomial.
         show_translated_poly (bool): (Default: False) In the output, also print the associated dynamically compressing polynomial.
         print_all_failures (bool): (Default: True) If false, hides when the same polynomial up to a constant is found.
@@ -40,7 +40,7 @@ def print_dynamical_compression(degree,compression,number_of_solutions,
     if compression < 1:
         raise ValueError("Invalid compression!")
     
-    print("----------PossibleDynCompressing")
+    print("----------")
     print("Looking for IVPs of degree",degree,"which compress ["+str(degree+compression)+"]")
 
     # This part is basically taken from fpylll's Github page. We're not exactly sure how it works.
@@ -58,17 +58,19 @@ def print_dynamical_compression(degree,compression,number_of_solutions,
         count += 1
         # Check for unwanted cases
         if max(j[2:]) == 0 and min(j[2:]) == 0:
-            print(count,"(linear solution)")
+            if print_failures:
+                print(count,"(linear solution)")
             continue
         if j[-1] == 0:
-            print(count,"(lower degree solution)")
+            if print_failures:
+                print(count,"(lower degree solution)")
             continue
         #print((i),tuple(map(int,j)))
         
         # Check if we found the same polynomial up to a constant
         non_constant_part = j[1:]
         if non_constant_part in found_vectors:
-            if print_all_failures:
+            if print_failures:
                 print(count,"(already found up to a constant)")
             continue
         else:
@@ -86,7 +88,8 @@ def print_dynamical_compression(degree,compression,number_of_solutions,
         
         if max(new_vector)-min(new_vector)+1 > degree+compression:
             if show_only_dyn_comp:
-                print(count,"(doesn't dynamically compress)")
+                if print_failures:
+                    print(count,"(doesn't dynamically compress)")
                 continue
         else:
             found_dyn_comp = True
@@ -103,5 +106,3 @@ def print_dynamical_compression(degree,compression,number_of_solutions,
         print()
     print("----------")
     return found_dyn_comp
-
-print_dynamical_compression(2,6,100000,show_vector=False,show_polynomial=True,show_translated_poly=True)
