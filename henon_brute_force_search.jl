@@ -108,7 +108,9 @@ function search_quadr(max_height)           # searches among all the quadratics 
                 Threads.atomic_max!(max_cycle_length, longest_cycle)
                 if longest_cycle >= max_cycle_length[]       # better than anything so far
                     orbit = trace_pt(f,get_euclidean_bound_quadr(a,b),get_p_adic_bound_quadr(a,b,all_primes),point_on_cycle)
-                    println(longest_cycle, " is achieved by a/b = ", a//b," starting at [",point_on_cycle[1],",",point_on_cycle[2],"]\n Orbit achieving this is: ",orbit)
+                    if longest_cycle>= max_cycle_length[]       # check again, so that it hasn't been updated because of threading
+                        println(longest_cycle, " is achieved by a/b = ", a//b," starting at [",point_on_cycle[1],",",point_on_cycle[2],"]\n Orbit achieving this is: ",orbit,"\n Maximum now is ",max_cycle_length[])
+                    end
                 end
                 println("done with a/b=",a//b)
                 if a!=0
@@ -120,7 +122,7 @@ function search_quadr(max_height)           # searches among all the quadratics 
                     if longest_cycle >= max_cycle_length[]       # better than anything so far
                         orbit = trace_pt(f,get_euclidean_bound_quadr(a,b),get_p_adic_bound_quadr(a,b,all_primes),point_on_cycle)
                         if longest_cycle>= max_cycle_length[]       # check again, so that it hasn't been updated because of threading
-                            println(longest_cycle, " is achieved by a/b = ", a//b," starting at [",point_on_cycle[1],",",point_on_cycle[2],"]\n Orbit achieving this is: ",orbit)
+                            println(longest_cycle, " is achieved by a/b = ", a//b," starting at [",point_on_cycle[1],",",point_on_cycle[2],"]\n Orbit achieving this is: ",orbit,"\n Maximum now is ",max_cycle_length[])
                         end
                     end
                     println("done with a/b=",a//b)
