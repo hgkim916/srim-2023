@@ -8,7 +8,6 @@ import matplotlib.cm as cm
 import matplotlib.patches as mpatches
 import matplotlib as mpl
 
-
 def discrete_sine_poly(d,negative = False):      # returns the discrete sine polynomial p.
                                 # defined in a box, outside of which the Henon maps diverge to infty.
     if d%4==1: # given by 0 1 1 0 -1 -1 0 ... (starting at 0)
