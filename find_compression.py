@@ -92,6 +92,4 @@ def PossibleDynCompressing(degree,compression,number_of_solutions,
     print("----------")
     return found_dyn_comp
 
-print("Hello World!") # So you know the program is running
-
-PossibleDynCompressing(10,10,10000,show_only_dynamically_compressing = True,show_vector = True)
+#PossibleDynCompressing(10,10,10000,show_only_dynamically_compressing = True,show_vector = True)

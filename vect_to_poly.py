@@ -100,4 +100,3 @@ def print_poly_from_vector(vector,x_translation=0,y_translation=0):
     # Note we need to translate the polynomial in the y-direction by a multiple of d!.
     translated_coeffs = translated_poly(coefficients,x_translation=x_translation,y_translation=y_translation*math.factorial(d))
     print_poly_from_coeffs(translated_coeffs,denom=math.factorial(d))
-    print("          --------              ")
