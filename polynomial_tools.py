@@ -13,7 +13,7 @@ def unsigned_stirling_first_kind(n,k):
     else:
         return (n-1)*unsigned_stirling_first_kind(n-1,k) + unsigned_stirling_first_kind (n-1,k-1)
 
-def basis_poly(i,d):
+def basis_poly_coeffs(i,d):
     '''
     Returns the coefficients of the polynomial d!*(x choose i), as a list [a_0, a_1, ..., a_{d-1}, a_d], where a_j is the coefficient of x^j.
     See the Wikipedia page for Stirling numbers of the 1st kind for more information.
@@ -60,7 +60,7 @@ def print_poly_from_coeffs(coefficients,denom = 1):
     else:
         print(")/"+str(denom))          # finish it by dividing by d!, so that the expression looks nicer
 
-def translated_poly(coefficients,x_translation,y_translation):
+def translated_poly_coeffs(coefficients,x_translation,y_translation):
     '''
     Given the coefficients of a polynomial p, returns the coefficients of p(x-x_translation)+y_translation.
     Note the sign of x_translation! We're translating positively to the right and upwards.
@@ -83,20 +83,29 @@ def translated_poly(coefficients,x_translation,y_translation):
         translated_coeffs[0] += y_translation
         return translated_coeffs 
     elif x_translation > 1:
-        return translated_poly(translated_coeffs,x_translation-1,y_translation)
+        return translated_poly_coeffs(translated_coeffs,x_translation-1,y_translation)
     else:
-        return translated_poly(translated_coeffs,x_translation+1,y_translation)
+        return translated_poly_coeffs(translated_coeffs,x_translation+1,y_translation)
 
-def print_poly_from_vector(vector,x_translation=0,y_translation=0):
+def vector_to_coeffs(vector):
     '''
-    Given a vector [u_0,u_1,...,u_d], prints the polynomial u_0(x choose 0)+u_1(x choose 1)+...+u_d(x choose d).
-    Optionally, also translate the polynomial first.
+    Given a vector [u_0,u_1,...,u_d], gives the coefficients [a_0,a_1,...,a_d]
+    of the polynomial u_0(x choose 0)+u_1(x choose 1)+...+u_d(x choose d), where a_i is the coefficient of x^i.
     '''
     d = len(vector)-1
     coefficients = np.zeros(d+1,dtype=np.int_)
     for i in range(len(vector)):
-        coefficients += vector[i]*basis_poly(i,d)      # stores the polynomial coefficients in the form d!*[a_0, a_1, ..., a_{d-1}, a_d] 
+        coefficients += vector[i]*basis_poly_coeffs(i,d)      # stores the polynomial coefficients in the form d!*[a_0, a_1, ..., a_{d-1}, a_d] 
+    return coefficients
 
+def print_poly_from_vector(vector,x_translation=0,y_translation=0):
+    '''
+    Given a vector [u_0,u_1,...,u_d], prints the polynomial u_0(x choose 0)+u_1(x choose 1)+...+u_d(x choose d),
+    simplifying to form a_0+a_1x+...+a_dx^d.
+    Optionally, also translate the polynomial first.
+    '''
+    d = len(vector)-1
+    coefficients = vector_to_coeffs(vector)
     # Note we need to translate the polynomial in the y-direction by a multiple of d!.
-    translated_coeffs = translated_poly(coefficients,x_translation=x_translation,y_translation=y_translation*math.factorial(d))
+    translated_coeffs = translated_poly_coeffs(coefficients,x_translation=x_translation,y_translation=y_translation*math.factorial(d))
     print_poly_from_coeffs(translated_coeffs,denom=math.factorial(d))
