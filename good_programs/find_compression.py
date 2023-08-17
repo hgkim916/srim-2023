@@ -1,9 +1,11 @@
 from fpylll import *
 from fpylll.fplll.gso import MatGSO
 import math
+import polynomial_tools
 
-def LambdaDEBasis(d,e):
-    '''Returns the basis (u_0, u_1, ..., u_(d+1)) as an IntegerMatrix object, with rows as basis vectors.
+def lambda_d_e_basis(d,e):
+    '''
+    Returns the basis (u_0, u_1, ..., u_(d+1)) as an IntegerMatrix object, with rows as basis vectors.
     '''
     basis = IntegerMatrix(d+1,d+e+1)
     for i in range(d+1):
@@ -11,10 +13,12 @@ def LambdaDEBasis(d,e):
             basis[i,j] = math.comb(j, i)
     return basis
 
-def PossibleDynCompressing(degree,compression,number_of_solutions,
-                           show_only_dyn_comp = True,
-                           show_vector = True,
-                           verbose = True):
+def print_dynamical_compression(degree,compression,number_of_solutions,
+                               show_only_dyn_comp = True,
+                               show_vector = False,
+                               show_polynomial = False,
+                               show_translated_poly = False,
+                               print_failures = True):
     '''
     Prints all possible dynamically compressing IVPs of degree d which send [d+compression] -> [d+compression],
         not repeating identical polynomials up to constants.
@@ -27,18 +31,21 @@ def PossibleDynCompressing(degree,compression,number_of_solutions,
                                    This must be finite, due to fpylll limitations.
         show_only_dyn_comp (bool): (Default: True) Whether to only display genuinely dynamically compressing polynomials. 
                                                   If false (default), e.g. a polynomial sending [10] -> [15] would display.
-        show_vector (bool): (Default: True) In the output, also print the associated vector in the lattice LambdaDE.
-        verbose (bool): (Default: True) Display more output information. If false, can cut down on the amount of outsput significantly.
+        show_vector (bool): (Default: False) In the output, also print the associated vector in the lattice LambdaDE.
+        show_polynomial (bool): (Default: False) In the output, also print the actual polynomial.
+        show_translated_poly (bool): (Default: False) In the output, also print the associated dynamically compressing polynomial.
+        print_all_failures (bool): (Default: True) If false, hides when the same polynomial up to a constant is found.
+                                                   Can cut down on the amount of outsput significantly.
     '''
     # First check for validity of input
     if compression < 1:
         raise ValueError("Invalid compression!")
     
-    print("----------PossibleDynCompressing")
+    print("----------")
     print("Looking for IVPs of degree",degree,"which compress ["+str(degree+compression)+"]")
 
     # This part is basically taken from fpylll's Github page. We're not exactly sure how it works.
-    A = LambdaDEBasis(degree,compression-1)
+    A = lambda_d_e_basis(degree,compression-1)
     M = MatGSO(A)
     _ = M.update_gso() # What does this do?
     enum = Enumeration(M,strategy = EvaluatorStrategy.BEST_N_SOLUTIONS,nr_solutions = number_of_solutions)
@@ -52,17 +59,19 @@ def PossibleDynCompressing(degree,compression,number_of_solutions,
         count += 1
         # Check for unwanted cases
         if max(j[2:]) == 0 and min(j[2:]) == 0:
-            print(count,"(linear solution)")
+            if print_failures:
+                print(count,"(linear solution)")
             continue
         if j[-1] == 0:
-            print(count,"(lower degree solution)")
+            if print_failures:
+                print(count,"(lower degree solution)")
             continue
         #print((i),tuple(map(int,j)))
         
         # Check if we found the same polynomial up to a constant
         non_constant_part = j[1:]
         if non_constant_part in found_vectors:
-            if verbose:
+            if print_failures:
                 print(count,"(already found up to a constant)")
             continue
         else:
@@ -80,18 +89,21 @@ def PossibleDynCompressing(degree,compression,number_of_solutions,
         
         if max(new_vector)-min(new_vector)+1 > degree+compression:
             if show_only_dyn_comp:
-                print(count,"(doesn't dynamically compress)")
+                if print_failures:
+                    print(count,"(doesn't dynamically compress)")
                 continue
         else:
             found_dyn_comp = True
         
+        coordinates = tuple(map(int,j))
+        print(count,"Coordinates:",coordinates,"\tCompression:",degree+compression,"to",max(new_vector)-min(new_vector)+1,end="")
         if show_vector:
-            print(count,"Coordinates:",tuple(map(int,j)),"\tCompression:",degree+compression,"to",max(new_vector)-min(new_vector)+1,"\tVector:",new_vector)
-        else:
-            print(count,"Coordinates:",tuple(map(int,j)),"\tCompression:",degree+compression,"to",max(new_vector)-min(new_vector)+1)
+            print("\tVector:",new_vector,end="")
+        if show_polynomial:
+            print("\tPolynomial:",polynomial_tools.poly_coords_to_string(coordinates),end="")
+        if show_translated_poly:
+            y_trans = 1-min(new_vector)
+            print("\tTranslated polynomial:",polynomial_tools.poly_coords_to_string(coordinates,1,y_trans),end="")
+        print()
     print("----------")
     return found_dyn_comp
-
-print("Hello World!") # So you know the program is running
-
-PossibleDynCompressing(10,10,10000,show_only_dynamically_compressing = True,show_vector = True)
