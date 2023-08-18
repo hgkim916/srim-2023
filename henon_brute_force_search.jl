@@ -31,6 +31,15 @@ function trace_pt(f, eucl_bound, padic_bound, X)    # Gives the orbit of the poi
     return orbit
 end
 
+function exponent_of(x,p)       # returns the exponent of p in the prime decomposition of X
+    e = 0
+    while x%p==0
+        e+=1
+        x=x/p
+    end
+    return e
+end
+
 # QUADRATIC STUFF
 
 function Henon_quadr_given_ab(a, b, x_coeff=-1)     # Returns the henon quadratic map
@@ -56,13 +65,7 @@ function get_p_adic_bound_quadr(a, b,all_primes)           # Returns the p-adic 
         if p>b && p > 3
             break
         elseif denominator(b//p)==1      # i.e. p divides b
-            # Find exponent of p in fact of b:
-            exponent = 0
-            while denominator(b//p)==1
-                exponent +=1
-                b = b//p
-            end
-            bound = bound * p^(exponent+1)
+            bound = bound * p^(exponent_of(b,p)+1)
         elseif p == 2 || p == 3
             bound = bound * p
         end
@@ -154,32 +157,29 @@ end
 function get_euclidean_bound_general(as, bs)        # Returns the integer l_inf bound  
     A = maximum(abs(as[i]//bs[i]) for i in eachindex(as[1:1:length(as)]))
     R = (2+A)//(abs(as[length(as)]//bs[length(bs)]))
-    return maximum([1,ceil(R)])
+    return maximum([1,ceil(Int,R)])
 end
 
 function get_p_adic_bound_general(as, bs,all_primes)           # Returns the p-adic bound, as the "worst possible denominator" that we could have.
     bound = 1
-    # for p in all_primes
-    #     if p>b && p > 3
-    #         break
-    #     elseif denominator(b//p)==1      # i.e. p divides b
-    #         # Find exponent of p in fact of b:
-    #         exponent = 0
-    #         while denominator(b//p)==1
-    #             exponent +=1
-    #             b = b//p
-    #         end
-    #         bound = bound * p^(exponent+1)
-    #     elseif p == 2 || p == 3
-    #         bound = bound * p
-    #     end
-    # end
+    for p in all_primes
+        Ap=0
+        for i in eachindex(as[1:length(as)-1])      # go through a0,a1,...,a(d-1)
+            a=as[i]
+            b=bs[i]
+            p_norm = Int(p^(exponent_of(b,p)-exponent_of(a,p)))
+            Ap= maximum([Ap,p_norm])           # Ap = max (|ai|_p) for 0<=i<=d-1
+        end
+        p_bound = maximum([1,Int((2+Ap)/(p^(exponent_of(bs[length(bs)],p)-exponent_of(as[length(as)],p))))])       # this is the p-adic bound
+        max_p_exp = floor(Int,log(p,p_bound))
+        bound = bound * p^max_p_exp
+    end
     return bound
 end
 
 function get_max_cycle_general(f, as, bs,all_primes)    # return the longest cycle of the quadratic Henon map f given by as and bs
-    eucl_bound = get_euclidean_bound_general(as, bs)
-    padic_bound = get_p_adic_bound_general(as, bs, all_primes)
+    eucl_bound::Int = get_euclidean_bound_general(as, bs)
+    padic_bound::Int = get_p_adic_bound_general(as, bs, all_primes)
     max_cycle = 0
     point_on_max = []
     checked_points = []
@@ -203,38 +203,6 @@ function get_max_cycle_general(f, as, bs,all_primes)    # return the longest cyc
     end
     return max_cycle, point_on_max
 end
-
-# function print_poly(as,bs)
-#     d = length(as)
-#     string = ""
-#     for i in eachindex(as)
-#         if as[i] != 0
-#             if i == 1
-#                 if as[i]//bs[i] == 1
-#                     string +="+x"
-#                 elseif poly_v[i] == -1
-#                     string +="-x"
-#                 else
-#                     string+="x"
-#                 end
-#             elseif i == 2
-#                 if poly_v[i] == 1
-#                     print("+x^$i", end="")
-#                 elseif poly_v[i] == -1
-#                     print("-x^$i", end="")
-#                 else
-#                     print("$(poly_v[i])x^$i", end="")
-#             else
-#                 if poly_v[i] == 1
-#                     print("+x^$(i)", end="")
-#                 elseif poly_v[i] == -1
-#                     print("-x^$(i)", end="")
-#                 else
-#                     print("$(poly_v[i])x^$(i)", end="")
-#             end
-#         end
-#     end
-# end
 
 function search_general(max_height,d)           # searches among all the polys of degree d with height at most max_height
     max_ab = floor(Int,exp(max_height))     # Recall h(a,b) = log max(|a|,|b|), we invert this to get a range for |a| and |b|
@@ -261,7 +229,6 @@ function search_general(max_height,d)           # searches among all the polys o
     end
     println("done!")
 end
-
 
 # search_quadr(5)
 search_general(2,3)
