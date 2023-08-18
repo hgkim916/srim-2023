@@ -171,7 +171,7 @@ def create_henon_graphic(p,escape_radius,check_radius,
                 colour_param = round((len(orbit)-1)/longest_cycle*255)
                 plot_orbit(orbit,colour_param,escape_radius,colour_style="PARAMETER",figure_size=figure_size)
             elif colour_style == "LONGEST":
-                if len(orbit)-1 == longest_cycle:
+                if len(orbit) == longest_cycle:
                     if exceptional_cycle_already_plotted:
                         colour_param = 127
                     else:
@@ -326,6 +326,19 @@ def new_family_poly(d):
     #print(list_of_values)
     return make_your_own_function(list_of_values,-roughly_half)
 
+def new_family_poly2(d): # for odd d
+    roughly_half = (d-1)//2
+    list_of_values = ([1]*(roughly_half)+[0])*2
+    list_of_values[-2] = -1
+    #print(list_of_values)
+    return make_your_own_function(list_of_values,-roughly_half)
+
+def new_family_poly3(d): # for even d
+    list_of_values = [0]*(d+1)
+    list_of_values[0] = 1
+    list_of_values[d//2] = 1
+    list_of_values[d//2 + 1] = 1
+    return make_your_own_function(list_of_values,-(d//2))
 #for d in range(3,51,2):
 #    roughly_half = (d-1)//2
 #    print(find_longest_cycle_length(new_family_poly(d),roughly_half+1,roughly_half+1))
@@ -335,5 +348,6 @@ def new_family_poly(d):
 #d = 11
 #roughly_half = (d-1)//2
 #create_henon_graphic(new_family_poly(d),roughly_half+1,roughly_half+1,colour_style="LENGTH")
-poly = discrete_sine_poly(3)
-create_henon_graphic(poly,6,6,colour_style="DEFAULT",figure_size=4)
+d = 29
+poly = shift_poly_in_x(2,discrete_sine_poly(d))
+create_henon_graphic(poly,d,d,colour_style="LONGEST",figure_size=10)
