@@ -140,6 +140,7 @@ def create_henon_graphic(p,escape_radius,check_radius,
                          colour_style="DEFAULT",
                          x_coefficient=-1):
 
+    
     found_points = []        # store all the vertices whose orbits we've already plotted
     fig,ax = plt.subplots(figsize = (figure_size,figure_size))
 
@@ -171,7 +172,7 @@ def create_henon_graphic(p,escape_radius,check_radius,
                 colour_param = round((len(orbit)-1)/longest_cycle*255)
                 plot_orbit(orbit,colour_param,escape_radius,colour_style="PARAMETER",figure_size=figure_size)
             elif colour_style == "LONGEST":
-                if len(orbit) == longest_cycle:
+                if len(orbit)-1 == longest_cycle:
                     if exceptional_cycle_already_plotted:
                         colour_param = 127
                     else:
@@ -206,6 +207,9 @@ def create_henon_graphic(p,escape_radius,check_radius,
     plt.axis('equal')
     if figure_title != "":
         plt.title(figure_title)
+    ax.set_xticks(ticks=list(range(-100,101)))
+    ax.set_axisbelow(True)
+    plt.grid(which="both",axis="both",color='#CCCCCC')
     plt.savefig(figure_name)
     plt.close()
 
@@ -217,137 +221,5 @@ def make_your_own_function(values,index_start): # define a function that takes s
         return values[x-index_start]
     return p
 
-def count_cycle_lengths(p,escape_radius,check_radius,x_coefficient=-1): # returns a dict with all the counts of cycle lengths
-    found_points = []
-    lengths = {}
-    for x_tocheck in range(-check_radius,check_radius):
-        for y_tocheck in range(-check_radius,check_radius):
-            if [x_tocheck,y_tocheck] in found_points:
-                continue
-            else:
-                orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius,x_coefficient=x_coefficient)
-                orbit_length = len(orbit)
-                if orbit_length == 0:
-                    continue
-                #print(orbit)
-                if orbit_length not in lengths:
-                    lengths[orbit_length] = 1
-                else:
-                    lengths[orbit_length] += 1
-                
-                found_points.extend(orbit)
-    lengths = {a:b for a,b in sorted(lengths.items())}
-    return lengths
-
-def count_preper(p,radius,x_coefficient):      # returns the total number of preperiodic points of the Henon map of polynomial p in the box given by range
-    found_points = []
-
-    for x_tocheck in range(-radius,radius):
-        for y_tocheck in range(-radius,radius):
-            if [x_tocheck,y_tocheck] in found_points:
-                continue
-            else:
-                orbit = trace_pt(p,[x_tocheck,y_tocheck],radius,x_coefficient=x_coefficient)
-                if len(orbit) == 0:
-                    continue
-                #print(orbit)
-                found_points.extend(orbit)
-    found_points = [list(tupl) for tupl in {tuple(item) for item in found_points }]   # sanity check, ensures no duplicates     
-    return len(found_points)
-
-def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "shift" to the right
-                                    # outputs poly(x-shift)
-    def new_poly(x):
-        return poly(x-shift)
-    return new_poly
-
-def next_list_lexicographic_order(input_list,min_entry,max_entry): # returns the next list by alphabetic order
-    if min(input_list) >= max_entry:
-        return
-    elif input_list[0] == max_entry:
-        return [min_entry]+next_list_lexicographic_order(input_list[1:],min_entry,max_entry)
-    else:
-        input_list[0] += 1
-        return input_list
-
-def list_of_differences(input_list):
-    new_list = [0]*(len(input_list)-1)
-    for i in range(len(new_list)):
-        new_list[i] = input_list[i+1]-input_list[i]
-    return new_list
-
-def find_degree_of_interpolating_polynomial(list_of_values):
-    if list_of_values == []: return 0
-    if max(list_of_values) == min(list_of_values):
-        return 0
-    else:
-        return 1 + find_degree_of_interpolating_polynomial(list_of_differences(list_of_values))
-
-def print_longest_cycles(f_min,f_max,x_min,x_max,desired_degree):
-    f_range = f_max-f_min+1
-    x_range = x_max-x_min+1
-    a = [f_min]*(x_range)
-
-    biggest = -1
-
-    count = 0
-    count2 = 0
-
-    print("range of f:",f_min,f_max)
-    print("range of x:",x_min,x_max)
-    print("desired degree: <=",desired_degree)
-    print("printing max cycle found as we go")
-    print("----------")
-    print("looking at "+str((f_range)**(x_range))+" values")
-
-    while a != None:
-        count2 += 1
-        if count2 % 1000000 == 0:
-            print(count2)
-        poly = make_your_own_function(a,x_min)
-        
-        if find_degree_of_interpolating_polynomial(a) > desired_degree:
-            a = next_list_lexicographic_order(a,f_min,f_max)
-            continue
-
-        current = find_longest_cycle_length(poly,max(abs(x_min),abs(x_max)),max(abs(x_min),abs(x_max)))
-        if current >= biggest:
-            biggest=current
-            count += 1
-            print(count,a,current,find_degree_of_interpolating_polynomial(a))
-        a = next_list_lexicographic_order(a,f_min,f_max)
-        
-        
-    print(count)
-
-def new_family_poly(d):
-    roughly_half = (d-1)//2
-    list_of_values = ([1]*(roughly_half)+[0])*2
-    #print(list_of_values)
-    return make_your_own_function(list_of_values,-roughly_half)
-
-def new_family_poly2(d): # for odd d
-    roughly_half = (d-1)//2
-    list_of_values = ([1]*(roughly_half)+[0])*2
-    list_of_values[-2] = -1
-    #print(list_of_values)
-    return make_your_own_function(list_of_values,-roughly_half)
-
-def new_family_poly3(d): # for even d
-    list_of_values = [0]*(d+1)
-    list_of_values[0] = 1
-    list_of_values[d//2] = 1
-    list_of_values[d//2 + 1] = 1
-    return make_your_own_function(list_of_values,-(d//2))
-#for d in range(3,51,2):
-#    roughly_half = (d-1)//2
-#    print(find_longest_cycle_length(new_family_poly(d),roughly_half+1,roughly_half+1))
-
-
-#print_longest_cycles(-1,1,-4,5,desired_degree=9)
-#d = 11
-#roughly_half = (d-1)//2
-#create_henon_graphic(new_family_poly(d),roughly_half+1,roughly_half+1,colour_style="LENGTH")
-d = 29
-poly = shift_poly_in_x(2,discrete_sine_poly(d))
-create_henon_graphic(poly,d,d,colour_style="LONGEST",figure_size=10)
+poly = discrete_sine_poly(3)
+create_henon_graphic(poly,6,6,colour_style="DEFAULT",figure_size=5)
