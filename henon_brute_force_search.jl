@@ -210,7 +210,7 @@ function search_general(max_height,d)           # searches among all the polys o
     max_cycle_length = Threads.Atomic{Int}(0)
     all_primes = primes_sieve(max_ab)
 
-    search_space_a = [i for i in Iterators.product(ntuple(_ -> -max_ab:max_ab,d+1)...)]
+    search_space_a = [i for i in Iterators.product(ntuple(_ -> 0:max_ab,d+1)...)]
     search_space_b = [i for i in Iterators.product(ntuple(_ -> 1:max_ab,d+1)...)]
     Threads.@threads for as in search_space_a
         Threads.@threads for bs in search_space_b
@@ -220,11 +220,12 @@ function search_general(max_height,d)           # searches among all the polys o
                 Threads.atomic_max!(max_cycle_length, longest_cycle)
                 if longest_cycle >= max_cycle_length[] && longest_cycle>1      # better than anything so far
                     orbit = trace_pt(f,get_euclidean_bound_general(as,bs),get_p_adic_bound_general(as,bs,all_primes),point_on_cycle)
-                    if longest_cycle>= max_cycle_length[]       # check again, so that it hasn't been updated because of threading
+                    if longest_cycle>= max_cycle_length[]       # check again, so that it hasn't been updated already because of threading
                         println(longest_cycle, " is achieved by as=",as," and bs=",bs,"\n    Orbit achieving this is: ",orbit,"\n    Maximum now is ",max_cycle_length[])
                     end
                 end
             end
+            println("       done with as=",as," and bs=",bs)
         end
     end
     println("done!")
