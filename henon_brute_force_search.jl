@@ -157,6 +157,7 @@ end
 function get_euclidean_bound_general(as, bs)        # Returns the integer l_inf bound  
     A = maximum(abs(as[i]//bs[i]) for i in eachindex(as[1:1:length(as)]))
     R = (2+A)//(abs(as[length(as)]//bs[length(bs)]))
+    print("R=",R)
     return maximum([1,ceil(Int,R)])
 end
 
@@ -167,10 +168,10 @@ function get_p_adic_bound_general(as, bs,all_primes)           # Returns the p-a
         for i in eachindex(as[1:length(as)-1])      # go through a0,a1,...,a(d-1)
             a=as[i]
             b=bs[i]
-            p_norm = Int(p^(exponent_of(b,p)-exponent_of(a,p)))
+            p_norm = p^(exponent_of(b,p))//(p^exponent_of(a,p))
             Ap= maximum([Ap,p_norm])           # Ap = max (|ai|_p) for 0<=i<=d-1
         end
-        p_bound = maximum([1,Int((2+Ap)/(p^(exponent_of(bs[length(bs)],p)-exponent_of(as[length(as)],p))))])       # this is the p-adic bound
+        p_bound = maximum([1,(2+Ap)/(p^(exponent_of(bs[length(bs)],p)//(p^exponent_of(as[length(as)],p))))])       # this is the p-adic bound
         max_p_exp = floor(Int,log(p,p_bound))
         bound = bound * p^max_p_exp
     end
@@ -210,10 +211,11 @@ function search_general(max_height,d)           # searches among all the polys o
     max_cycle_length = Threads.Atomic{Int}(0)
     all_primes = primes_sieve(max_ab)
 
-    search_space_a = [i for i in Iterators.product(ntuple(_ -> 0:max_ab,d+1)...)]
+    search_space_a = [i for i in Iterators.product(ntuple(_ -> -max_ab:max_ab,d)...,ntuple(_ -> [1:max_ab;-1:-1:-max_ab],1)...)]
     search_space_b = [i for i in Iterators.product(ntuple(_ -> 1:max_ab,d+1)...)]
     Threads.@threads for as in search_space_a
         Threads.@threads for bs in search_space_b
+            println("Trying as=",as," and bs=",bs)
             if maximum([gcd(as[i],bs[i]) for i in eachindex(as)])==1
                 f = Henon_general_poly(as, bs)
                 longest_cycle, point_on_cycle = get_max_cycle_general(f,as,bs,all_primes)
