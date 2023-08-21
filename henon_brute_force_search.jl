@@ -218,7 +218,8 @@ function search_general(max_height,d)           # searches among all the polys o
     all_primes = primes_sieve(max_ab)
     # println("Primes are ",all_primes)
 
-    search_space_a = [i for i in Iterators.product(ntuple(_ -> [Int((-1^k)*floor((k)/2)) for k in 1: 2*max_ab+1],d)...,ntuple(_ ->[Int((-1^k)*floor((k+1)/2)) for k in 1: 2*max_ab],1)...)]    # this is the search space for the as, it's a bit complicated but it works
+    search_space_a = [i for i in Iterators.product(ntuple(_ -> [Int(((-1)^k)*floor((k)/2)) for k in 1: 2*max_ab+1],d)...,ntuple(_ ->[Int(((-1)^k)*floor((k+1)/2)) for k in 1: 2*max_ab],1)...)]    # this is the search space for the as, it's a bit complicated but it works
+    println("search space for as is ",search_space_a)
     search_space_b = [i for i in Iterators.product(ntuple(_ -> 1:max_ab,d+1)...)]
     Threads.@threads for as in search_space_a
         Threads.@threads for bs in search_space_b
