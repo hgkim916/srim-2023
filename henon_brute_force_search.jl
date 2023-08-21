@@ -157,7 +157,6 @@ end
 function get_euclidean_bound_general(as, bs)        # Returns the integer l_inf bound  
     A = maximum(abs(as[i]//bs[i]) for i in eachindex(as[1:1:length(as)]))
     R = (2+A)//(abs(as[length(as)]//bs[length(bs)]))
-    print("R=",R)
     return maximum([1,ceil(Int,R)])
 end
 
@@ -211,7 +210,7 @@ function search_general(max_height,d)           # searches among all the polys o
     max_cycle_length = Threads.Atomic{Int}(0)
     all_primes = primes_sieve(max_ab)
 
-    search_space_a = [i for i in Iterators.product(ntuple(_ -> -max_ab:max_ab,d)...,ntuple(_ -> [1:max_ab;-1:-1:-max_ab],1)...)]
+    search_space_a = [i for i in Iterators.product(ntuple(_ -> [Int((-1^k)*floor((k)/2)) for k in 1: 2*max_ab+1],d)...,ntuple(_ ->[Int((-1^k)*floor((k+1)/2)) for k in 1: 2*max_ab],1)...)]    # this is the search space for the as, it's a bit complicated but it works
     search_space_b = [i for i in Iterators.product(ntuple(_ -> 1:max_ab,d+1)...)]
     Threads.@threads for as in search_space_a
         Threads.@threads for bs in search_space_b
