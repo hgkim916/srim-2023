@@ -172,7 +172,7 @@ def create_henon_graphic(p,escape_radius,check_radius,
                 colour_param = round((len(orbit)-1)/longest_cycle*255)
                 plot_orbit(orbit,colour_param,escape_radius,colour_style="PARAMETER",figure_size=figure_size)
             elif colour_style == "LONGEST":
-                if len(orbit)-1 == longest_cycle:
+                if len(orbit) == longest_cycle:
                     if exceptional_cycle_already_plotted:
                         colour_param = 127
                     else:
@@ -209,7 +209,7 @@ def create_henon_graphic(p,escape_radius,check_radius,
         plt.title(figure_title)
     ax.set_xticks(ticks=list(range(-100,101)))
     ax.set_axisbelow(True)
-    plt.grid(which="both",axis="both",color='#CCCCCC')
+    #plt.grid(which="both",axis="both",color='#CCCCCC')
     plt.savefig(figure_name)
     plt.close()
 
@@ -221,5 +221,5 @@ def make_your_own_function(values,index_start): # define a function that takes s
         return values[x-index_start]
     return p
 
-poly = discrete_sine_poly(3)
-create_henon_graphic(poly,6,6,colour_style="DEFAULT",figure_size=5)
+poly = make_your_own_function((-1, -1, 3, -1, 0, 2, -1, 1, 1),-4)
+create_henon_graphic(poly,6,6,colour_style="LONGEST",figure_size=5)
