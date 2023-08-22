@@ -32,6 +32,9 @@ function trace_pt(f, eucl_bound, padic_bound, X)    # Gives the orbit of the poi
 end
 
 function exponent_of(x,p)       # returns the exponent of p in the prime decomposition of X
+    if x == 0
+        return 0
+    end
     e = 0
     while x%p==0
         e+=1
@@ -167,10 +170,10 @@ function get_p_adic_bound_general(as, bs,all_primes)           # Returns the p-a
         for i in eachindex(as[1:length(as)-1])      # go through a0,a1,...,a(d-1)
             a=as[i]
             b=bs[i]
-            p_norm = Int(p^(exponent_of(b,p)-exponent_of(a,p)))
+            p_norm = p^(exponent_of(b,p))//(p^exponent_of(a,p))
             Ap= maximum([Ap,p_norm])           # Ap = max (|ai|_p) for 0<=i<=d-1
         end
-        p_bound = maximum([1,Int((2+Ap)/(p^(exponent_of(bs[length(bs)],p)-exponent_of(as[length(as)],p))))])       # this is the p-adic bound
+        p_bound = maximum([1,(2+Ap)/(p^(exponent_of(bs[length(bs)],p)//(p^exponent_of(as[length(as)],p))))])       # this is the p-adic bound
         max_p_exp = floor(Int,log(p,p_bound))
         bound = bound * p^max_p_exp
     end
@@ -179,7 +182,9 @@ end
 
 function get_max_cycle_general(f, as, bs,all_primes)    # return the longest cycle of the quadratic Henon map f given by as and bs
     eucl_bound::Int = get_euclidean_bound_general(as, bs)
+    # println("Euclidean bound:",eucl_bound)
     padic_bound::Int = get_p_adic_bound_general(as, bs, all_primes)
+    # println("p-adic bound:",padic_bound)
     max_cycle = 0
     point_on_max = []
     checked_points = []
@@ -205,26 +210,33 @@ function get_max_cycle_general(f, as, bs,all_primes)    # return the longest cyc
 end
 
 function search_general(max_height,d)           # searches among all the polys of degree d with height at most max_height
+    println(Threads.nthreads()," threads")
+
     max_ab = floor(Int,exp(max_height))     # Recall h(a,b) = log max(|a|,|b|), we invert this to get a range for |a| and |b|
     println("height ",max_height," means search to modulus ",max_ab)
     max_cycle_length = Threads.Atomic{Int}(0)
     all_primes = primes_sieve(max_ab)
+    # println("Primes are ",all_primes)
 
-    search_space_a = [i for i in Iterators.product(ntuple(_ -> -max_ab:max_ab,d+1)...)]
+    search_space_a = [i for i in Iterators.product(ntuple(_ -> [Int(((-1)^k)*floor((k)/2)) for k in 1: 2*max_ab+1],d)...,ntuple(_ ->[Int(((-1)^k)*floor((k+1)/2)) for k in 1: 2*max_ab],1)...)]    # this is the search space for the as, it's a bit complicated but it works
+    # println("search space for as is ",search_space_a)
     search_space_b = [i for i in Iterators.product(ntuple(_ -> 1:max_ab,d+1)...)]
     Threads.@threads for as in search_space_a
         Threads.@threads for bs in search_space_b
+            # println("Trying as=",as," and bs=",bs)
             if maximum([gcd(as[i],bs[i]) for i in eachindex(as)])==1
                 f = Henon_general_poly(as, bs)
                 longest_cycle, point_on_cycle = get_max_cycle_general(f,as,bs,all_primes)
                 Threads.atomic_max!(max_cycle_length, longest_cycle)
                 if longest_cycle >= max_cycle_length[] && longest_cycle>1      # better than anything so far
+                    # println("Long cycle detected, tracing ",point_on_cycle," for as=",as," and bs=",bs)
                     orbit = trace_pt(f,get_euclidean_bound_general(as,bs),get_p_adic_bound_general(as,bs,all_primes),point_on_cycle)
-                    if longest_cycle>= max_cycle_length[]       # check again, so that it hasn't been updated because of threading
+                    if longest_cycle>= max_cycle_length[]       # check again, so that it hasn't been updated already because of threading
                         println(longest_cycle, " is achieved by as=",as," and bs=",bs,"\n    Orbit achieving this is: ",orbit,"\n    Maximum now is ",max_cycle_length[])
                     end
                 end
             end
+            # println("  done with as=",as," and bs=",bs)
         end
     end
     println("done!")
