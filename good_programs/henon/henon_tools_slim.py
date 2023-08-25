@@ -107,7 +107,7 @@ def plot_orbit(orbit,colour_parameter,figure_scale,colour_style="DEFAULT"):
         for k in range(len(orbit)-1):
             plt.arrow(orbit[k][0],orbit[k][1],orbit[k+1][0]-orbit[k][0],orbit[k+1][1]-orbit[k][1],width=.01,color = col,alpha =0.2)         # plots an arrow between two consecutive iterates
 
-def find_longest_cycle_length(p,escape_radius,check_radius,x_coeff=-1):
+def find_longest_cycle_length(p,radius,x_coeff=-1):
     '''
     Returns the length of the longest periodic cycle of the Henon map (x,y) -> (y,x_coeff*x + p(y)).
     Checks only periodic cycles starting within the box of radius check_radius, and entirely contained within the box
@@ -115,20 +115,20 @@ def find_longest_cycle_length(p,escape_radius,check_radius,x_coeff=-1):
     
     Parameters:
         p (function): The polynomial associated with the Henon map
-        escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
-        check_radius (int): The box to check for periodic cycles.
+        radius (int): The radius of the box within which we want to check for periodic cycles.
+                      If the point iterates outside the box of this radius, then forget about it.
         x_coeff (int): (Default: -1) The Henon map is (x,y) -> (y,x_coeff*x + p(y)).
     '''
 
     found_points = []
     largest_orbit_size = 0
 
-    for x_tocheck in range(-check_radius,check_radius):
-        for y_tocheck in range(-check_radius,check_radius):
+    for x_tocheck in range(-radius,radius):
+        for y_tocheck in range(-radius,radius):
             if [x_tocheck,y_tocheck] in found_points:
                 continue
             else:
-                orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius,x_coeff=x_coeff)
+                orbit = trace_pt(p,[x_tocheck,y_tocheck],radius,x_coeff=x_coeff)
                 if len(orbit) == 0:
                     continue
                 #print(orbit)
@@ -138,7 +138,7 @@ def find_longest_cycle_length(p,escape_radius,check_radius,x_coeff=-1):
                     largest_orbit_size = len(orbit)
     return largest_orbit_size
 
-def create_henon_graphic(p,escape_radius,check_radius
+def create_henon_graphic(p,radius
                          ,figure_name="output"
                          ,figure_title=""
                          ,figure_size=10
@@ -152,8 +152,7 @@ def create_henon_graphic(p,escape_radius,check_radius
     
     Parameters:
         p (function): The polynomial associated with the Henon map
-        escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
-        check_radius (int): The box to check for periodic cycles.
+        radius (int): The radius of the box within which we want to check for periodic cycles.
         figure_name (str): (Default: "output") The name of the file to save the figure to (extension is assumed to be .png)
         figure_title (str): (Default: "") The title of the figure (shown on the plot). By default, this is empty.
         figure_size (int): (Default: 10) The size of the figure
@@ -175,24 +174,24 @@ def create_henon_graphic(p,escape_radius,check_radius
         plt.plot(xs,ys,"--",color = "grey")
 
     if colour_style == "LENGTH" or "LONGEST":
-        longest_cycle = find_longest_cycle_length(p,escape_radius,check_radius,x_coeff=x_coeff)
+        longest_cycle = find_longest_cycle_length(p,radius,x_coeff=x_coeff)
     if colour_style == "LONGEST":
         exceptional_cycle_already_plotted = False
 
     count = 0
-    for i in range(-check_radius,check_radius+1):    
-        for j in range(-check_radius,check_radius+1):        # iterate through all the points
+    for i in range(-radius,radius+1):    
+        for j in range(-radius,radius+1):        # iterate through all the points
             if [i,j] in found_points: continue            # only iterate if we haven't plotted already, to reduce computation
             
-            orbit = trace_pt(p,[i,j],escape_radius,x_coeff=x_coeff)     # get the orbit by tracing the point
+            orbit = trace_pt(p,[i,j],radius,x_coeff=x_coeff)     # get the orbit by tracing the point
             if len(orbit) == 0: continue
             #print(orbit)
             found_points.extend(orbit)          # add each iterate to the list of plotted vertices
             if colour_style == "DEFAULT":
-                plot_orbit(orbit,count,figure_scale=check_radius/figure_size)       # plot the orbit    
+                plot_orbit(orbit,count,figure_scale=radius/figure_size)       # plot the orbit    
             elif colour_style == "LENGTH":
                 colour_param = round((len(orbit)-1)/longest_cycle*255)
-                plot_orbit(orbit,colour_param,figure_scale=check_radius/figure_size,colour_style="PARAMETER")
+                plot_orbit(orbit,colour_param,figure_scale=radius/figure_size,colour_style="PARAMETER")
             elif colour_style == "LONGEST":
                 if len(orbit) == longest_cycle:
                     if exceptional_cycle_already_plotted:
@@ -202,7 +201,7 @@ def create_henon_graphic(p,escape_radius,check_radius
                         exceptional_cycle_already_plotted = True
                 else:
                     colour_param = 0
-                plot_orbit(orbit,colour_param,figure_scale=check_radius/figure_size,colour_style="PARAMETER")
+                plot_orbit(orbit,colour_param,figure_scale=radius/figure_size,colour_style="PARAMETER")
             count += 1                   # for count-based colour styles
 
     # plot formatting:
@@ -247,25 +246,24 @@ def make_your_own_function(values,index_start):
         return values[x-index_start]
     return p
 
-def count_cycle_lengths(p,escape_radius,check_radius,x_coeff=-1):
+def count_cycle_lengths(p,radius,x_coeff=-1):
     '''
     Returns a dictionary, which counts the number of periodic cycles of each cycle length, of the Henon map
     (x,y) -> (y,x_coeff*x + p(y)).
 
     Parameters: 
         p (function): The polynomial associated with the Henon map
-        escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
-        check_radius (int): The box to check for periodic cycles.
+        radius (int): The radius of the box within which the program will check for periodic cycles.
         x_coeff (int): (Default: -1) The Henon map is (x,y) -> (y,x_coeff*x + p(y)).
     '''
     found_points = []
     lengths = {}
-    for x_tocheck in range(-check_radius,check_radius):
-        for y_tocheck in range(-check_radius,check_radius):
+    for x_tocheck in range(-radius,radius):
+        for y_tocheck in range(-radius,radius):
             if [x_tocheck,y_tocheck] in found_points:
                 continue
             else:
-                orbit = trace_pt(p,[x_tocheck,y_tocheck],escape_radius,x_coeff=x_coeff)
+                orbit = trace_pt(p,[x_tocheck,y_tocheck],radius,x_coeff=x_coeff)
                 orbit_length = len(orbit)
                 if orbit_length == 0:
                     continue
