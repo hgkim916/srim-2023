@@ -62,7 +62,7 @@ def trace_pt(p,X,escape_radius,x_coeff=-1):
         p (function): The polynomial. Should be defined on relevant integer values.
         X (2-tuple): The starting point.
         escape_radius (int): If the point iterates outside the box of radius escape_radius, then return [].
-        x_coeff (int): The delta in the general Henon map. Default is -1.
+        x_coeff (int): (Default: -1) The Henon map is (x,y) -> (y,x_coeff*x + p(y)).
     '''
     orbit = []
     while X not in orbit:
@@ -109,12 +109,15 @@ def plot_orbit(orbit,colour_parameter,figure_scale,colour_style="DEFAULT"):
 
 def find_longest_cycle_length(p,escape_radius,check_radius,x_coeff=-1):
     '''
-    Returns the length of the longest periodic cycle of the Henon map (x,y) -> (y,x_coeff*x + p(y)) within the box of radius check_radius,.
+    Returns the length of the longest periodic cycle of the Henon map (x,y) -> (y,x_coeff*x + p(y)).
+    Checks only periodic cycles starting within the box of radius check_radius, and entirely contained within the box
+        escape_radius.
+    
     Parameters:
         p (function): The polynomial associated with the Henon map
         escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
         check_radius (int): The box to check for periodic cycles.
-        x_coeff (int): The delta in the general Henon map. Default is -1.
+        x_coeff (int): (Default: -1) The Henon map is (x,y) -> (y,x_coeff*x + p(y)).
     '''
 
     found_points = []
@@ -152,14 +155,15 @@ def create_henon_graphic(p,escape_radius,check_radius
         escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
         check_radius (int): The box to check for periodic cycles.
         figure_name (str): (Default: "output") The name of the file to save the figure to (extension is assumed to be .png)
-        figure_title (str): (Default: no title) The title of the figure (shown on the plot)
+        figure_title (str): (Default: "") The title of the figure (shown on the plot). By default, this is empty.
         figure_size (int): (Default: 10) The size of the figure
         reference_box_size (int): (Default: 0, i.e. no reference box) The size of the reference box to draw
         colour_style (str): (default: "DEFAULT") Options to choose the colour of the plot.
             "DEFAULT": A collection of arbitrary colours.
-            "LENGTH": The colour of each cycle is determined by its length, with the longest cycle being magenta and the shortest being blue.
-            "LONGEST": The colour of each cycle is determined by whether it is the longest cycle or not.
-        x_coeff (int): The delta in the general Henon map. Default is -1.
+            "LENGTH": The colour of each cycle is determined by its length, with the longest cycle being magenta and a 1-cycle being cyan.
+            "LONGEST": The colour of each cycle is determined by whether it is the longest cycle or not. 
+                       Ties are handled by colouring a single cycle in pink, and the rest in purple.
+        x_coeff (int): (Default: -1) The Henon map is (x,y) -> (y,x_coeff*x + p(y)).
     '''
 
     found_points = []        # store all the vertices whose orbits we've already plotted
@@ -230,7 +234,8 @@ def create_henon_graphic(p,escape_radius,check_radius
 
 def make_your_own_function(values,index_start): 
     '''
-    Define a function that takes specified values at integers starting at index_start.
+    Define a function that takes specified values at consecutive integers starting at index_start.
+
     Parameters:
         values (list): The values to take at each consecutive integer starting at index_start.
         index_start (int): The first integer to define the function at.
@@ -249,7 +254,7 @@ def count_cycle_lengths(p,escape_radius,check_radius,x_coeff=-1):
         p (function): The polynomial associated with the Henon map
         escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
         check_radius (int): The box to check for periodic cycles.
-        x_coeff (int): The delta in the general Henon map. Default is -1.
+        x_coeff (int): (Default: -1) The Henon map is (x,y) -> (y,x_coeff*x + p(y)).
     '''
     found_points = []
     lengths = {}
@@ -274,11 +279,13 @@ def count_cycle_lengths(p,escape_radius,check_radius,x_coeff=-1):
 
 def count_preper(p,radius,x_coeff):
     '''
-    Returns the total number of integer preperiodic points of the Henon map of polynomial p in the box given by radius.
+    Returns the total number of integer periodic points of the Henon map (x,y) -> (y,x_coeff*x + p(y))
+    within the box of the specified radius.
+    
     Parameters:
         p (function): The polynomial associated with the Henon map
         radius (int): The box to check for preperiodic points.
-        x_coeff (int): The delta in the general Henon map. Default is -1.
+        x_coeff (int): (Default: -1) The Henon map is (x,y) -> (y,x_coeff*x + p(y)).
     '''
     found_points = []
 
@@ -297,7 +304,8 @@ def count_preper(p,radius,x_coeff):
 
 def shift_poly_in_x(shift,poly):       
     '''
-    Shifts the value taken by distance "shift" to the right, returning poly(x-shift).
+    Shifts the given function to the right, returning poly(x-shift).
+
     Parameters:
         shift (int): The distance to shift the function by.
         poly (function): The function to shift.
