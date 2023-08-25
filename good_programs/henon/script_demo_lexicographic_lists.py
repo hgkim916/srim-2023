@@ -1,3 +1,5 @@
+# Demonstrates the next_list_colex_order function.
+
 from henon_search_for_longer_cycles import next_list_colex_order
 
 list_length = 4
