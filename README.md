@@ -2,10 +2,11 @@
 
 Prerequisites: fpylll
 
-TO DO:
-1. Organize, clean up and bring over the Henon programs.
-2. Type up a how-to for how to run the fpylll programs. (I don't know how feasible this is in the short time-period - I'd have to try to uninstall and re-install everything probably)
+I think we're done!
 
+The good_programs folder has organized programs we've spent some time cleaning up.
+
+The incomplete_programs folder has some of our previous stuff in case something is cited or needed. 
 
 WHICH SCRIPT AM I LOOKING FOR?
 1. Henon maps
