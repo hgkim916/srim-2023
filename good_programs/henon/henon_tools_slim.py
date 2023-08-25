@@ -434,3 +434,6 @@ def new_family_poly(d,family_index):
     else:
         print("family_index must be 1, 2 or 3")
         return None
+
+d = 15
+create_henon_graphic(discrete_sine_poly(d),escape_radius=(d+5)//2,check_radius=(d+5)//2,figure_name="output",colour_style="LONGEST",figure_size=10)
