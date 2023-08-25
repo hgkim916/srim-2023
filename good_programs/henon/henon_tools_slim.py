@@ -435,29 +435,15 @@ def new_family_poly(d,family_index):
         print("family_index must be 1, 2 or 3")
         return None
 
-#for d in range(3,51,2):
-#    roughly_half = (d-1)//2
-#    print(find_longest_cycle_length(new_family_poly(d),roughly_half+1,roughly_half+1))
 
+'''
+EXAMPLES OF WHAT TO RUN:
 
-#print_longest_cycles(-1,1,-4,5,desired_degree=9)
-#d = 11
-#roughly_half = (d-1)//2
-#create_henon_graphic(new_family_poly(d),roughly_half+1,roughly_half+1,colour_style="LENGTH")
-d = 3
-poly = shift_poly_in_x(0,discrete_sine_poly(d))
-
-for i in range((-d-7)//2,(d+7)//2+1):
-    print(i,poly(i))
-
-
-
-'''EXAMPLES OF WHAT TO RUN:
 1. Create a single Henon Graphic
     a. TAH
     b. Shifted TAH
     c. New Family i
-2.
+2. Create all the Henon Graphic for each degree d in a range
 
 
 ------------------------------------------------------------------------------------------------------------------------
