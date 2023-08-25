@@ -157,7 +157,7 @@ def create_henon_graphic(p,escape_radius,check_radius
         figure_name (str): (Default: "output") The name of the file to save the figure to (extension is assumed to be .png)
         figure_title (str): (Default: "") The title of the figure (shown on the plot). By default, this is empty.
         figure_size (int): (Default: 10) The size of the figure
-        reference_box_size (int): (Default: 0, i.e. no reference box) The size of the reference box to draw
+        reference_box_size (int): (Default: 0) The size of the reference box to draw. If the value is 0, then don't draw a reference box.
         colour_style (str): (default: "DEFAULT") Options to choose the colour of the plot.
             "DEFAULT": A collection of arbitrary colours.
             "LENGTH": The colour of each cycle is determined by its length, with the longest cycle being magenta and a 1-cycle being cyan.
@@ -249,7 +249,9 @@ def make_your_own_function(values,index_start):
 
 def count_cycle_lengths(p,escape_radius,check_radius,x_coeff=-1):
     '''
-    Returns a dictionary with all the counts of cycle lengths.
+    Returns a dictionary, which counts the number of periodic cycles of each cycle length, of the Henon map
+    (x,y) -> (y,x_coeff*x + p(y)).
+
     Parameters: 
         p (function): The polynomial associated with the Henon map
         escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
