@@ -28,4 +28,10 @@ def find_emax_upperbound_suggestion(d, print_progress = True, print_result = Tru
         print("----------------",d,max_e - 4)
     return max_e - 4
 
+### Change variables as desired
+
+d = 60
+
+###
+
 find_emax_upperbound_suggestion(60,print_progress = True)

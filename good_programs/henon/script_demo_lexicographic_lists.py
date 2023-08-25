@@ -2,10 +2,14 @@
 
 from henon_search_for_longer_cycles import next_list_colex_order
 
+### Change variables as desired
+
 list_length = 4
 min_entry = -2
 max_entry = 2
 a = [min_entry]*4
+
+###
 
 while a != None:
     print(a)

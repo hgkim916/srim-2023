@@ -43,7 +43,6 @@ def new_family_poly3(d): # for even d
     if d%2 == 1:
         raise ValueError("d must be even.")
 
-
     list_of_values = [0]*(d+1)
     list_of_values[0] = 1
     list_of_values[d//2] = 1
@@ -68,14 +67,19 @@ def new_family_poly(d,family_index):
         print("family_index must be 1, 2 or 3")
         return None
 
-# Change as desired:
+### Change variables as desired
 
-family = 1          # choices: 1,2,3.  
+family = 1          # choices: 1,2,3.  Note family 1 and 2 are defined on odd d, family 3 is defined on even d. 
 
+# Range of d
 d_min = 3           # Family 2 requires d to be odd, family 3 requires d to be even.
 d_max = 9           # if only one value of d is needed, make d_min=d_max = required value
+
 colour_style = "LENGTH"
-figure_name_prefix = "new_family_"+str(family)+"_"+colour_style+"_d_"
+
+figure_name_prefix = "new_family_"+str(family)+"_"+colour_style+"_d_" # Names the output files
+
+###
 
 for d in range(d_min,d_max+2,2):     
         create_henon_graphic(new_family_poly(d,family),
