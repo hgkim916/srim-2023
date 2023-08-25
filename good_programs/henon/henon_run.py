@@ -1,6 +1,7 @@
 from henon_tools_slim import *
 
 
+# Ok actually I'm going to split this into many individual scripts, but I'll leave this here until then.
 '''
 EXAMPLES OF WHAT TO RUN:
 
@@ -9,6 +10,10 @@ EXAMPLES OF WHAT TO RUN:
     b. Shifted TAH
     c. New Family i
 2. Create all the Henon graphic for each degree d in a range
+    a. TAH
+    b. Shifted TAH
+    c. New Family i
+3. Output the longest cycle length for a single d
 
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -35,7 +40,7 @@ chosen_colour_style = "LENGTH"
 filename = "Shifted_TAH_d"+str(d)+"_graphic"
 
 # Remove '# ' from the line below to run the function and create the Henon graphic
-create_henon_graphic(shift_poly_in_x(shift,discrete_sine_poly(d)),escape_radius=(d+5)//2,check_radius=(d+5)//2,colour_style=chosen_colour_style,figure_size=10)
+# create_henon_graphic(shift_poly_in_x(shift,discrete_sine_poly(d)),escape_radius=(d+5)//2,check_radius=(d+5)//2,colour_style=chosen_colour_style,figure_size=10)
 
 '''
     c. New Family i:
