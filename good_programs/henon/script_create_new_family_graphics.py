@@ -1,6 +1,6 @@
 # Create all the Henon graphics of a certain type (e.g. longest) for the specified new family for each degree d in a range
 
-from henon_tools_slim import *
+from henon_tools import *
 
 def new_family_poly1(d):
     '''

@@ -1,4 +1,4 @@
-from henon_tools_slim import *
+from henon_tools import *
 
 def next_list_colex_order(input_list,min_entry,max_entry): 
     '''
@@ -7,7 +7,7 @@ def next_list_colex_order(input_list,min_entry,max_entry):
 
     This is like, the next list alphabetically, in a dictionary, if everyone read right to left.
 
-    For a demo see demo_lexicographic_lists.py
+    For a demo see script_demo_colex_order.py
     '''
     if min(input_list) >= max_entry:
         return
