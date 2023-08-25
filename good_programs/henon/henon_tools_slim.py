@@ -228,7 +228,13 @@ def create_henon_graphic(p,escape_radius,check_radius
     plt.savefig(figure_name)
     plt.close()
 
-def make_your_own_function(values,index_start): # define a function that takes specified values at integer intervals starting at index_start.
+def make_your_own_function(values,index_start): 
+    '''
+    Define a function that takes specified values at integers starting at index_start.
+    Parameters:
+        values (list): The values to take at each consecutive integer starting at index_start.
+        index_start (int): The first integer to define the function at.
+    '''
     def p(x):
         if x-index_start<0 or x-index_start>=len(values):
             #print("Outside function range!")
@@ -236,7 +242,15 @@ def make_your_own_function(values,index_start): # define a function that takes s
         return values[x-index_start]
     return p
 
-def count_cycle_lengths(p,escape_radius,check_radius,x_coeff=-1): # returns a dict with all the counts of cycle lengths
+def count_cycle_lengths(p,escape_radius,check_radius,x_coeff=-1):
+    '''
+    Returns a dictionary with all the counts of cycle lengths.
+    Parameters: 
+        p (function): The polynomial associated with the Henon map
+        escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
+        check_radius (int): The box to check for periodic cycles.
+        x_coeff (int): The delta in the general Henon map. Default is -1.
+    '''
     found_points = []
     lengths = {}
     for x_tocheck in range(-check_radius,check_radius):
@@ -258,7 +272,14 @@ def count_cycle_lengths(p,escape_radius,check_radius,x_coeff=-1): # returns a di
     lengths = {a:b for a,b in sorted(lengths.items())}
     return lengths
 
-def count_preper(p,radius,x_coeff):      # returns the total number of preperiodic points of the Henon map of polynomial p in the box given by range
+def count_preper(p,radius,x_coeff):
+    '''
+    Returns the total number of integer preperiodic points of the Henon map of polynomial p in the box given by radius.
+    Parameters:
+        p (function): The polynomial associated with the Henon map
+        radius (int): The box to check for preperiodic points.
+        x_coeff (int): The delta in the general Henon map. Default is -1.
+    '''
     found_points = []
 
     for x_tocheck in range(-radius,radius):
@@ -274,13 +295,21 @@ def count_preper(p,radius,x_coeff):      # returns the total number of preperiod
     found_points = [list(tupl) for tupl in {tuple(item) for item in found_points }]   # sanity check, ensures no duplicates     
     return len(found_points)
 
-def shift_poly_in_x(shift,poly):        # shifts the value taken by distance "shift" to the right
-                                    # outputs poly(x-shift)
+def shift_poly_in_x(shift,poly):       
+    '''
+    Shifts the value taken by distance "shift" to the right, returning poly(x-shift).
+    Parameters:
+        shift (int): The distance to shift the function by.
+        poly (function): The function to shift.
+    '''
     def new_poly(x):
         return poly(x-shift)
     return new_poly
 
-def next_list_lexicographic_order(input_list,min_entry,max_entry): # returns the next list by alphabetic order
+def next_list_lexicographic_order(input_list,min_entry,max_entry): 
+    '''
+    Returns the next list by alphabetic order. VIVIAN PLEASE CLARIFY WHAT THIS IS, I'M A BIT CONFUSED.
+    '''
     if min(input_list) >= max_entry:
         return
     elif input_list[0] == max_entry:
@@ -303,6 +332,17 @@ def find_degree_of_interpolating_polynomial(list_of_values):
         return 1 + find_degree_of_interpolating_polynomial(list_of_differences(list_of_values))
 
 def print_longest_cycles(f_min,f_max,x_min,x_max,desired_degree):
+    '''
+    Prints the longest cycles of the Henon map (x,y) -> (y,x_coeff*x + p(y)) for all polynomials p with degree <= desired_degree.
+
+    Searches amongs polynomials p taking integer values between f_min and f_max on the integers between x_min and x_max.
+
+    Parameters:
+        f_min (int): The minimum value that the polynomial can take on the given range.
+        f_max (int): The maximum value that the polynomial can take on the given range.
+        x_min (int): The first integer to interpolate the function at.
+        x_max (int): The last integer to interpolate the function at.
+    '''
     f_range = f_max-f_min+1
     x_range = x_max-x_min+1
     a = [f_min]*(x_range)
@@ -340,12 +380,24 @@ def print_longest_cycles(f_min,f_max,x_min,x_max,desired_degree):
     print(count)
 
 def new_family_poly(d):
+    '''
+    Returns the polynomial of degree d in New Family 1
+
+    Parameters:
+        d (int): The degree of the polynomial.
+    '''
     roughly_half = (d-1)//2
     list_of_values = ([1]*(roughly_half)+[0])*2
     #print(list_of_values)
     return make_your_own_function(list_of_values,-roughly_half)
 
 def new_family_poly2(d): # for odd d
+    '''
+    Returns the polynomial of degree d in New Family 2, for odd d.
+
+    Parameters:
+        d (int): The degree of the polynomial. Should be odd.
+    '''
     roughly_half = (d-1)//2
     list_of_values = ([1]*(roughly_half)+[0])*2
     list_of_values[-2] = -1
@@ -353,6 +405,12 @@ def new_family_poly2(d): # for odd d
     return make_your_own_function(list_of_values,-roughly_half)
 
 def new_family_poly3(d): # for even d
+    '''
+    Returns the polynomial of degree d in New Family 3, for even d.
+
+    Parameters:
+        d (int): The degree of the polynomial. Should be even.
+    '''
     list_of_values = [0]*(d+1)
     list_of_values[0] = 1
     list_of_values[d//2] = 1
