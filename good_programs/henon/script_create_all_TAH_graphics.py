@@ -7,7 +7,7 @@ from henon_tools_slim import *
 d_min = 3
 d_max = 71
 colour_style = "LENGTH"
-figure_name_prefix = "TAH_"+colour_style+"_d_" # Saves as e.g. "TAH_d_19.png" 
+figure_name_prefix = "TAH_"+colour_style+"_d_" # Saves as e.g. "TAH_LENGTH_d_19.png" 
 
 for d in range(d_min,d_max+2,2):     
         create_henon_graphic(discrete_sine_poly(d),int((d+5)/2),int((d+5)/2),
