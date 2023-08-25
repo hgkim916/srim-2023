@@ -78,6 +78,7 @@ colour_style = "LENGTH"
 figure_name_prefix = "new_family_"+str(family)+"_"+colour_style+"_d_"
 
 for d in range(d_min,d_max+2,2):     
-        create_henon_graphic(new_family_poly(d,family),escape_radius=(d+1)//2,check_radius=(d+1)//2,
+        create_henon_graphic(new_family_poly(d,family),
+                             radius=(d+1)//2,
                              figure_name=figure_name_prefix+str(d),
                              colour_style=colour_style)
