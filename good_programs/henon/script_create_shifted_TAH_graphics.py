@@ -1,4 +1,4 @@
-# This will create all the Henon graphics of a certain type (e.g. longest) and a specified shift for each degree d in a range
+# Create all the Henon graphics of a certain type (e.g. longest) for a specified shift of the TAH polys for each degree d in a range
 
 from henon_tools_slim import *
 
