@@ -416,6 +416,8 @@ def new_family_poly3(d): # for even d
     list_of_values[d//2] = 1
     list_of_values[d//2 + 1] = 1
     return make_your_own_function(list_of_values,-(d//2))
+
+
 #for d in range(3,51,2):
 #    roughly_half = (d-1)//2
 #    print(find_longest_cycle_length(new_family_poly(d),roughly_half+1,roughly_half+1))
@@ -432,3 +434,11 @@ for i in range((-d-7)//2,(d+7)//2+1):
     print(i,poly(i))
 
 #create_henon_graphic(poly,d,d,colour_style="LONGEST",figure_size=10)
+
+
+# EXAMPLES OF WHAT TO RUN:
+
+# Create a single Henon Graphic for TAH
+# Change the degree d and colour style as desired
+d = 19
+create_henon_graphic(discrete_sine_poly(d),escape_radius=(d+5)//2,check_radius=(d+5)//2,colour_style="LENGTH",figure_size=10)
