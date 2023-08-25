@@ -379,7 +379,7 @@ def print_longest_cycles(f_min,f_max,x_min,x_max,desired_degree):
         
     print(count)
 
-def new_family_poly(d):
+def new_family_poly1(d):
     '''
     Returns the polynomial of degree d in New Family 1
 
@@ -417,6 +417,23 @@ def new_family_poly3(d): # for even d
     list_of_values[d//2 + 1] = 1
     return make_your_own_function(list_of_values,-(d//2))
 
+def new_family_poly(d,family_index):
+    '''
+    Returns the polynomial of degree d in the New Family given by family_index.
+    
+    Parameters:
+        d (int): The degree of the polynomial.
+        family_index (int): The index of the New Family. Should be 1, 2 or 3.
+    '''
+    if family_index == 1:
+        return new_family_poly1(d)
+    elif family_index == 2:
+        return new_family_poly2(d)
+    elif family_index == 3:
+        return new_family_poly3(d)
+    else:
+        print("family_index must be 1, 2 or 3")
+        return None
 
 #for d in range(3,51,2):
 #    roughly_half = (d-1)//2
@@ -433,12 +450,41 @@ poly = shift_poly_in_x(0,discrete_sine_poly(d))
 for i in range((-d-7)//2,(d+7)//2+1):
     print(i,poly(i))
 
-#create_henon_graphic(poly,d,d,colour_style="LONGEST",figure_size=10)
 
 
-# EXAMPLES OF WHAT TO RUN:
+'''EXAMPLES OF WHAT TO RUN:
+1. Create a single Henon Graphic
+    a. TAH
+    b. Shifted TAH
+    c. New Family i
+2.
 
-# Create a single Henon Graphic for TAH
+
+------------------------------------------------------------------------------------------------------------------------
+
+1. Create a single Henon Graphic
+    a. TAH:
+'''
 # Change the degree d and colour style as desired
 d = 19
-create_henon_graphic(discrete_sine_poly(d),escape_radius=(d+5)//2,check_radius=(d+5)//2,colour_style="LENGTH",figure_size=10)
+chosen_colour_style = "LENGTH"
+create_henon_graphic(discrete_sine_poly(d),escape_radius=(d+5)//2,check_radius=(d+5)//2,colour_style=chosen_colour_style,figure_size=10)
+
+
+'''
+    b. Shifted TAH:
+'''
+# Change the degree d, shift and colour style as desired
+d = 19
+shift = 1
+chosen_colour_style = "LENGTH"
+create_henon_graphic(shift_poly_in_x(shift,discrete_sine_poly(d)),escape_radius=(d+5)//2,check_radius=(d+5)//2,colour_style=chosen_colour_style,figure_size=10)
+
+'''
+    c. New Family i:
+'''
+# Change the degree d, family_index and colour style as desired
+d = 19
+family_index = 1
+chosen_colour_style = "LENGTH"
+create_henon_graphic(new_family_poly(d,family_index),escape_radius=(d+1)//2,check_radius=(d+1)//2,colour_style=chosen_colour_style,figure_size=10)
