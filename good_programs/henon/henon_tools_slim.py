@@ -62,7 +62,7 @@ def trace_pt(p,X,escape_radius,x_coeff=-1):
         p (function): The polynomial. Should be defined on relevant integer values.
         X (2-tuple): The starting point.
         escape_radius (int): If the point iterates outside the box of radius escape_radius, then return [].
-        x_coeff (int): Something Something
+        x_coeff (int): The delta in the general Henon map. Default is -1.
     '''
     orbit = []
     while X not in orbit:
@@ -107,8 +107,16 @@ def plot_orbit(orbit,colour_parameter,figure_scale,colour_style="DEFAULT"):
         for k in range(len(orbit)-1):
             plt.arrow(orbit[k][0],orbit[k][1],orbit[k+1][0]-orbit[k][0],orbit[k+1][1]-orbit[k][1],width=.01,color = col,alpha =0.2)         # plots an arrow between two consecutive iterates
 
-def find_longest_cycle_length(p,escape_radius,check_radius,x_coeff=-1): # find the length of the longest cycle in an orbit p.
-                                                             # can easily be modified to give you the actual cycle too.
+def find_longest_cycle_length(p,escape_radius,check_radius,x_coeff=-1):
+    '''
+    Returns the length of the longest periodic cycle of the Henon map (x,y) -> (y,x_coeff*x + p(y)) within the box of radius check_radius,.
+    Parameters:
+        p (function): The polynomial associated with the Henon map
+        escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
+        check_radius (int): The box to check for periodic cycles.
+        x_coeff (int): The delta in the general Henon map. Default is -1.
+    '''
+
     found_points = []
     largest_orbit_size = 0
 
@@ -142,6 +150,16 @@ def create_henon_graphic(p,escape_radius,check_radius
     Parameters:
         p (function): The polynomial associated with the Henon map
         escape_radius (int): If the point iterates outside the box of radius escape_radius, then assume it escapes.
+        check_radius (int): The box to check for periodic cycles.
+        figure_name (str): (Default: "output") The name of the file to save the figure to (extension is assumed to be .png)
+        figure_title (str): (Default: no title) The title of the figure (shown on the plot)
+        figure_size (int): (Default: 10) The size of the figure
+        reference_box_size (int): (Default: 0, i.e. no reference box) The size of the reference box to draw
+        colour_style (str): (default: "DEFAULT") Options to choose the colour of the plot.
+            "DEFAULT": A collection of arbitrary colours.
+            "LENGTH": The colour of each cycle is determined by its length, with the longest cycle being magenta and the shortest being blue.
+            "LONGEST": The colour of each cycle is determined by whether it is the longest cycle or not.
+        x_coeff (int): The delta in the general Henon map. Default is -1.
     '''
 
     found_points = []        # store all the vertices whose orbits we've already plotted
